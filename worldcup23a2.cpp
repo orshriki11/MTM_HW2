@@ -13,6 +13,8 @@ world_cup_t::~world_cup_t()
 
 StatusType world_cup_t::add_team(int teamId)
 {
+
+    //TODO: Add team to HashTable and link it with it's UF.
     if (teamId <= 0) {
         return StatusType::INVALID_INPUT;
     }
@@ -36,6 +38,8 @@ StatusType world_cup_t::add_team(int teamId)
 
 StatusType world_cup_t::remove_team(int teamId)
 {
+
+    // TODO: removing team from hash table and raising a 'team removed' flag in team.
     if (teamId <= 0) {
         return StatusType::INVALID_INPUT;
     }
@@ -56,6 +60,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
                                    const permutation_t &spirit, int gamesPlayed,
                                    int ability, int cards, bool goalKeeper)
 {
+
     if (playerId <= 0 || teamId <= 0 || gamesPlayed < 0 || cards < 0) {
         return StatusType::INVALID_INPUT;
     }
@@ -65,6 +70,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     std::shared_ptr<Team> team_of_player;
     std::shared_ptr<Player> new_player_ptr;
 
+    // TODO: Add Player as a UpTreeNode and link pointer to hashtable and UF
 
 
 
@@ -105,6 +111,7 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards)
 output_t<int> world_cup_t::get_player_cards(int playerId)
 {
     if(playerId <= 0)
+    {
         return StatusType::INVALID_INPUT;
     }
 	// TODO: Your code goes here
@@ -139,7 +146,7 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId)
     if(playerId <= 0)
         return StatusType::INVALID_INPUT;
     }
-	// TODO: Your code goes here
+	// TODO: Need to figure out how to accumulate spirit from continuous bought teams.
 	return permutation_t();
 }
 
@@ -147,6 +154,6 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
 {
     if(teamId1 <= 0 || teamId2 <= 0)
         return StatusType::INVALID_INPUT;
-	// TODO: Your code goes here
+	// TODO: Need to properly modify player's part_spirit when teams are bought continuesly.
 	return StatusType::SUCCESS;
 }
