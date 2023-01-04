@@ -1,129 +1,111 @@
 #ifndef MTM_HW2_UNIONFIND_H
 #define MTM_HW2_UNIONFIND_H
 
-template<class T>
-struct UpTreeNode {
-    int size;  // size of the up tree
-    T* data;
-    //bool isRoot;
-    UpTreeNode<T>* parent;  // parent in the up tree
-    UnionFind* UF;
+template<class E>
+class UpTreeNode {
+public:
+    E element;
+    UpTreeNode<E> *parent;  // parent in the up tree
 
-    UpTreeNode(T* Data);
-
-    UpTreeNode();
-
-    ~UpTreeNode() = default;
+    explicit UpTreeNode(E element) : element(element), parent(nullptr) {}
 };
 
-template<class T>
-UpTreeNode<T>::UpTreeNode(T* Data) : data(Data), isRoot(false), parent(nullptr), size(1), UF(nullptr) {}
+template<class G, class E>
+class GroupNode;
 
-template<class T>
-UpTreeNode<T>::UpTreeNode() : data(T()), isRoot(false), parent(nullptr), size(1), UF(nullptr) {}
+template<class G, class E>
+class UpTree{
+private:
+    UpTreeNode<E>* root;
+    GroupNode<G, E>* group_node;
+    int size;
+};
 
-/*template<class T>
-UpTreeNode<T>::~UpTreeNode(){
-    free(parent);
-}*/
+template<class G, class E>
+class GroupNode{
+public: 
+    G group;
+    UpTree<G, E>* group_tree;
+};
 
-
-
-
-
-
-template<class K, class T>
-class UnionFind
-{
+template<class K, class E>
+class UnionFind {
 private:
     int size;
-    K* Master;
-    UpTreeNode<T>* root;
+    K *Master;
+    UpTreeNode<E> *root;
 
 public:
-    UnionFind<K,T>() : size(0), Master(nullptr), root(nullptr){}
+    UnionFind<K, E>() : size(0), Master(nullptr), root(nullptr) {}
 
-    UnionFind<K,T>(K* master) : size(0), Master(master), root(nullptr){}
+    UnionFind<K, E>(K *master) : size(0), Master(master), root(nullptr) {}
 
-    ~UnionFind<K,T>() = default;
+    ~UnionFind<K, E>() = default;
 
-    void MakeSet(T data);
+    void MakeSet(E data);
 
-    void insert(UpTreeNode<T>* node);
+    void insert(UpTreeNode<E> *node);
 
-    K* Find(UpTreeNode<T>* key);
+    K *Find(UpTreeNode<E> *key);
 
-    UpTreeNode<T>* FindRoot(UpTreeNode<T>* key);
+    UpTreeNode<E> *FindRoot(UpTreeNode<E> *key);
 
-    void Unite(UpTreeNode<T>* x, UpTreeNode<T>* y);
+    void Unite(UpTreeNode<E> *x, UpTreeNode<E> *y);
 };
 
 //TODO: Check viability of function.
 
-template<class T>
-void UnionFind<K,T>::insert(UpTreeNode<T>* node) {
-    if(root != nullptr)
-    {
+template<class E>
+void UnionFind<K, E>::insert(UpTreeNode<E> *node) {
+    if (root != nullptr) {
         root = node;
-    }
-    else
-    {
+    } else {
         node->parent = root;
     }
 
 }
 
 //TODO: Check viability of function.
-template<class T>
-void UnionFind<K,T>::MakeSet(T data) {
-    UpTreeNode<T> *new_node = new UpTreeNode<T>(data);
-    if(root != nullptr)
-    {
+template<class E>
+void UnionFind<K, E>::MakeSet(E data) {
+    UpTreeNode<E> *new_node = new UpTreeNode<E>(data);
+    if (root != nullptr) {
         root = new_node->parent;
-    }
-    else
-    {
+    } else {
         new_node->parent = root;
     }
 
 }
 
 template<class T, Class K>
-K* UnionFind<K,T>::Find(UpTreeNode<T>* key) {
-    UpTreeNode<T>* root = findRoot(key);
+K *UnionFind<K, E>::Find(UpTreeNode<E> *key) {
+    UpTreeNode<E> *root = findRoot(key);
     return root.UF;
 }
 
-template<class T>
-UpTreeNode<T>* UnionFind<K,T>::FindRoot(UpTreeNode<T>* key) {
-    if(key->parent != nullptr)
-    {
-        UpTreeNode<T>* key_root = findRoot(key->parent);
+template<class E>
+UpTreeNode<E> *UnionFind<K, E>::FindRoot(UpTreeNode<E> *key) {
+    if (key->parent != nullptr) {
+        UpTreeNode<E> *key_root = findRoot(key->parent);
         key->parent = key_root;
         return key_root;
-    }
-    else
-    {
+    } else {
         return key;
     }
 }
 
 template<class T, Class K>
-void UnionFind<K,T>::Unite(UpTreeNode<T>* x, UpTreeNode<T>* y) {
-    UpTreeNode<T>* x_Root = findRoot(x);
-    UpTreeNode<T>* y_Root = findRoot(y);
-    if(x_Root = y_Root)
+void UnionFind<K, E>::Unite(UpTreeNode<E> *x, UpTreeNode<E> *y) {
+    UpTreeNode<E> *x_Root = findRoot(x);
+    UpTreeNode<E> *y_Root = findRoot(y);
+    if (x_Root = y_Root)
         return;
-    if(x_Root.size >= y_Root.size)
-    {
+    if (x_Root.size >= y_Root.size) {
         y_Root.parent = x_Root;
-    }
-    else
-    {
+    } else {
         x_Root.parent = y_Root;
     }
 }
-
 
 
 #endif //MTM_HW2_UNIONFIND_H
