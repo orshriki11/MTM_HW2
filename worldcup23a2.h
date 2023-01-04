@@ -18,9 +18,15 @@
 #include "wet2util.h"
 #include "Player.h"
 #include "Team.h"
-class world_cup_t {
+#include "HashTable.h"
+#include "AVLTree.h"
+#include "UnionFind.h"
+
+class world_cup_t{
 private:
 
+    HashTable<Team> teamsHash;
+    HashTable<UpTreeNode<Player>> playersHash;
     int number_of_teams = 0;
     int number_of_all_teams = 0;
 	//

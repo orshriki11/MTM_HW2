@@ -70,6 +70,8 @@ void UnionFind<K,T>::insert(UpTreeNode<T>* node) {
     {
         node->parent = root;
     }
+    size++;
+    return;
 
 }
 

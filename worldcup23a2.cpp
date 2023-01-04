@@ -1,9 +1,7 @@
 #include "worldcup23a2.h"
 
-
-world_cup_t::world_cup_t()
+world_cup_t::world_cup_t() : teamsHash(), playersHash(), number_of_teams(0), number_of_all_teams(0)
 {
-	// TODO: Your code goes here
 }
 
 world_cup_t::~world_cup_t()
@@ -13,19 +11,20 @@ world_cup_t::~world_cup_t()
 
 StatusType world_cup_t::add_team(int teamId)
 {
-
     //TODO: Add team to HashTable and link it with it's UF.
     if (teamId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    std::shared_ptr<Team> new_Team(new (std::nothrow) Team(teamId));
+    Team* new_Team(new (std::nothrow) Team(teamId));
     if(!new_Team)
     {
         return StatusType::ALLOCATION_ERROR;
     }
-/*    try
+    teams
+
+    try
     {
-        if(TeamsTree.insert(teamId, new_Team) != AVLTreeResult::AVL_TREE_SUCCESS)
+        if(Team.insert(teamId, new_Team) != AVLTreeResult::AVL_TREE_SUCCESS)
         {
             return StatusType::FAILURE;
         }
@@ -102,8 +101,8 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards)
         return StatusType::INVALID_INPUT;
     }
     // TODO: Correctly Fetch player data
-    Player player = PLAYARDATABASE.find(playerId);
-    player.cards += cards;
+    //Player player = PLAYARDATABASE.find(playerId);
+    //player.cards += cards;
 	// TODO: Your code goes here
 	return StatusType::SUCCESS;
 }
