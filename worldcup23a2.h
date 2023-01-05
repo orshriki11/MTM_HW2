@@ -24,9 +24,8 @@
 
 class world_cup_t{
 private:
-
-    HashTable<Team> teamsHash;
-    HashTable<UpTreeNode<Player>> playersHash;
+    HashTable<UnionFind<Team*,Player*>> teamsHash;
+    HashTable<UpTreeNode<Player*>> playersHash;
     int number_of_teams = 0;
     int number_of_all_teams = 0;
 	//

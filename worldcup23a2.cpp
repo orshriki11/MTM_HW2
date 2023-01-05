@@ -15,23 +15,28 @@ StatusType world_cup_t::add_team(int teamId)
     if (teamId <= 0) {
         return StatusType::INVALID_INPUT;
     }
+
+    if(teamsHash.search(teamId) != NULL)
+    {
+        return StatusType::FAILURE;
+    }
+
     Team* new_Team(new (std::nothrow) Team(teamId));
     if(!new_Team)
     {
         return StatusType::ALLOCATION_ERROR;
     }
-    teams
 
     try
     {
-        if(Team.insert(teamId, new_Team) != AVLTreeResult::AVL_TREE_SUCCESS)
-        {
-            return StatusType::FAILURE;
-        }
-    }*/
+        UnionFind<Team*,Player*> new_team_UF = UnionFind<Team*,Player*>(new_Team);
+        teamsHash.insert(teamId, new_team_UF);
+        //new_team_UF.getMaster();
+    }
     catch (const std::bad_alloc &) {
             return StatusType::ALLOCATION_ERROR;
     }
+
 	return StatusType::SUCCESS;
 }
 
@@ -42,16 +47,15 @@ StatusType world_cup_t::remove_team(int teamId)
     if (teamId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    std::shared_ptr<Team> team_to_remove;
-    /*if (TeamsTree.find(teamId, &team_to_remove) != AVLTreeResult::AVL_TREE_SUCCESS) {
+
+    UnionFind<Team*,Player*> *team_UF = teamsHash.search(teamId);
+    if(team_UF != nullptr)
+    {
         return StatusType::FAILURE;
-    }*/
-    if (team_to_remove->playersCount == 0) {
-        /*if (TeamsTree.remove(teamId) != AVLTreeResult::AVL_TREE_SUCCESS) {
-            return StatusType::FAILURE;
-        }*/
-        return StatusType::SUCCESS;
     }
+    team_UF->getMaster()->isRemoved = true;
+    team_UF->getMaster()->teamId = -1;
+    teamsHash.remove(teamId);
     return StatusType::FAILURE;
 }
 
@@ -66,16 +70,23 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     if (gamesPlayed == 0 && (cards > 0)) {
         return StatusType::INVALID_INPUT;
     }
-    std::shared_ptr<Team> team_of_player;
-    std::shared_ptr<Player> new_player_ptr;
 
+    UnionFind<Team*,Player*>* UF_of_Player = teamsHash.search(teamId);
+    if(playersHash.search(playerId) != nullptr || UF_of_Player == nullptr)
+    {
+        return StatusType::FAILURE;
+    }
+
+    try{
+        Player* new_player = new Player(playerId,teamId,spirit,gamesPlayed,ability,cards,goalKeeper);
+
+        UpTreeNode<Player*> *player_node = new UpTreeNode<Player*>(new_player);
+        UF_of_Player->insert(player_node);
+    }
+    catch (const std::bad_alloc &) {
+        return StatusType::ALLOCATION_ERROR;
+    }
     // TODO: Add Player as a UpTreeNode and link pointer to hashtable and UF
-
-
-
-
-
-
 
 
 	return StatusType::SUCCESS;
@@ -89,15 +100,19 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
 
 output_t<int> world_cup_t::num_played_games_for_player(int playerId)
 {
+
     // TODO: Correctly Fetch player data
-	Player player = PLAYARDATABASE.find(playerId);
-    int gamesPlayed = player.gamesPlayed + (player.teamP.lock()->gamesPlayed - player.teamGamesPlayed_preAdd);
+	UpTreeNode<Player*> *player_node = playersHash.search(playerId);
+    Player* player = player_node->data;
+    //int played_games = player->gamesPlayed +
+    //int gamesPlayed = player.gamesPlayed + (player.teamP.lock()->gamesPlayed - player.teamGamesPlayed_preAdd);
 	return 22;
 }
 
 StatusType world_cup_t::add_player_cards(int playerId, int cards)
 {
     if(playerId <= 0 || cards < 0)
+    {
         return StatusType::INVALID_INPUT;
     }
     // TODO: Correctly Fetch player data
@@ -143,10 +158,11 @@ output_t<int> world_cup_t::get_ith_pointless_ability(int i)
 output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId)
 {
     if(playerId <= 0)
+    {
         return StatusType::INVALID_INPUT;
     }
 	// TODO: Need to figure out how to accumulate spirit from continuous bought teams.
-	return permutation_t();
+	//return permutation_t();
 }
 
 StatusType world_cup_t::buy_team(int teamId1, int teamId2)

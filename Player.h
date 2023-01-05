@@ -26,13 +26,13 @@ struct Player {
     int teamGamesPlayed_preAdd;
     bool goalKeeper;
     permutation_t partialSpirit;
-    std::weak_ptr<Team> teamP;
+    //std::weak_ptr<Team> teamP;
     //std::weak_ptr<Player> close_PrevPlayer;
     //std::weak_ptr<Player> close_NextPlayer;
 
-    Player(int playerId, int teamId, const permutation_t &spirit int gamesPlayed,int ability, int cards, bool goalKeeper, std::weak_ptr<Team> team)
+    Player(int playerId, int teamId, const permutation_t &spirit, int gamesPlayed,int ability, int cards, bool goalKeeper)
             : playerId(playerId), teamId(teamId),teamSpirit(spirit), gamesPlayed(gamesPlayed), cards(cards),
-              goalKeeper(goalKeeper), teamP(team), partialSpirit(1) {
+              goalKeeper(goalKeeper), partialSpirit() {
 
     }
 
