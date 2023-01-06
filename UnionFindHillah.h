@@ -29,18 +29,18 @@ public:
 };
 
 template<class K, class E>
-class UnionFind {
+class UnionFindHillah {
 private:
     int size;
     K *Master;
     UpTreeNode<E> *root;
 
 public:
-    UnionFind<K, E>() : size(0), Master(nullptr), root(nullptr) {}
+    UnionFindHillah<K, E>() : size(0), Master(nullptr), root(nullptr) {}
 
-    UnionFind<K, E>(K *master) : size(0), Master(master), root(nullptr) {}
+    UnionFindHillah<K, E>(K *master) : size(0), Master(master), root(nullptr) {}
 
-    ~UnionFind<K, E>() = default;
+    ~UnionFindHillah<K, E>() = default;
 
     void MakeSet(E data);
 
@@ -56,7 +56,7 @@ public:
 //TODO: Check viability of function.
 
 template<class E>
-void UnionFind<K, E>::insert(UpTreeNode<E> *node) {
+void UnionFindHillah<K, E>::insert(UpTreeNode<E> *node) {
     if (root != nullptr) {
         root = node;
     } else {
@@ -67,7 +67,7 @@ void UnionFind<K, E>::insert(UpTreeNode<E> *node) {
 
 //TODO: Check viability of function.
 template<class E>
-void UnionFind<K, E>::MakeSet(E data) {
+void UnionFindHillah<K, E>::MakeSet(E data) {
     UpTreeNode<E> *new_node = new UpTreeNode<E>(data);
     if (root != nullptr) {
         root = new_node->parent;
@@ -78,13 +78,13 @@ void UnionFind<K, E>::MakeSet(E data) {
 }
 
 template<class T, Class K>
-K *UnionFind<K, E>::Find(UpTreeNode<E> *key) {
+K *UnionFindHillah<K, E>::Find(UpTreeNode<E> *key) {
     UpTreeNode<E> *root = findRoot(key);
     return root.UF;
 }
 
 template<class E>
-UpTreeNode<E> *UnionFind<K, E>::FindRoot(UpTreeNode<E> *key) {
+UpTreeNode<E> *UnionFindHillah<K, E>::FindRoot(UpTreeNode<E> *key) {
     if (key->parent != nullptr) {
         UpTreeNode<E> *key_root = findRoot(key->parent);
         key->parent = key_root;
@@ -95,7 +95,7 @@ UpTreeNode<E> *UnionFind<K, E>::FindRoot(UpTreeNode<E> *key) {
 }
 
 template<class T, Class K>
-void UnionFind<K, E>::Unite(UpTreeNode<E> *x, UpTreeNode<E> *y) {
+void UnionFindHillah<K, E>::Unite(UpTreeNode<E> *x, UpTreeNode<E> *y) {
     UpTreeNode<E> *x_Root = findRoot(x);
     UpTreeNode<E> *y_Root = findRoot(y);
     if (x_Root = y_Root)
