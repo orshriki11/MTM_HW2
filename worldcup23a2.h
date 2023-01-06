@@ -26,17 +26,21 @@ class world_cup_t{
 private:
     HashTable<Team> teamsHash;
     HashTable<UnionFindNode<Team*,Player*>> playersHash;
-    int number_of_teams = 0;
-    int number_of_all_teams = 0;
-	//
-	// Here you may add anything you want
-	//
-	
+    int numberOfActiveTeams;
+    int numberOfAllTeams;
+	AVLTree<int, std::shared_ptr<Team>> teamsTreeById;
+    AVLTree<Team, std::shared_ptr<Team>> teamsTreeByAbility;
+
 public:
 	// <DO-NOT-MODIFY> {
 	
 	world_cup_t();
-	virtual ~world_cup_t();
+
+    ~world_cup_t() = default;
+
+    world_cup_t(const world_cup_t&) = default;
+
+    world_cup_t& operator=(const world_cup_t&) = default;
 	
 	StatusType add_team(int teamId);
 	

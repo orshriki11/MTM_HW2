@@ -29,10 +29,7 @@ struct Team {
     bool isRemoved;
     int GamesPlayed_preBought;
     permutation_t teamSpirit;
-    UnionFindNode<Team*,Player*> *UF_Team;
-
-
-
+    UnionFindNode<Team *, Player *> *UF_Team;
 
 
 /*    AVLTree<int, std::shared_ptr<Player>> teamPlayers_byID;
@@ -47,13 +44,30 @@ struct Team {
                        isKosher(false),
                        isRemoved(false),
                        teamSpirit(),
-                       GamesPlayed_preBought(0){
+                       GamesPlayed_preBought(0) {
     }
 
     Team() = default;
 
-    ~Team(){
+    ~Team() {
     };
+
+    bool operator<(const Team& other) const {
+        if (totalAbility == other.totalAbility) {
+            return teamId < other.teamId;
+        } else {
+            return totalAbility < other.totalAbility;
+        }
+    }
+
+    bool operator==(const Team& other) const {
+        return teamId == other.teamId;
+    }
+
+    bool operator>(const Team& other) const {
+        return !(*this < other || *this == other);
+    }
+
 
 };
 
