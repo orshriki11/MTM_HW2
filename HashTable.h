@@ -57,7 +57,7 @@ public:
 
     void remove(int key);
 
-    T *search(int key);
+    T* search(int key);
 
     int getNumElements();
 
@@ -250,7 +250,7 @@ void HashTable<T>::remove(int key) {
 }
 
 template<class T>
-T *HashTable<T>::search(int key) {
+T* HashTable<T>::search(int key) {
     int key_index = findKeyIndex(key);
     if (key_index == -1) {
         return nullptr;
