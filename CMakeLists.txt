@@ -11,4 +11,4 @@ add_executable(MTM_HW2
         Team.h
         wet2util.h
         worldcup23a2.cpp
-        worldcup23a2.h)
+        worldcup23a2.h UnionFindNode.h)

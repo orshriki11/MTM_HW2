@@ -20,12 +20,12 @@
 #include "Team.h"
 #include "HashTable.h"
 #include "AVLTree.h"
-#include "UnionFind.h"
+#include "UnionFindNode.h"
 
 class world_cup_t{
 private:
-    HashTable<UnionFind<Team*,Player*>> teamsHash;
-    HashTable<UpTreeNode<Player*>> playersHash;
+    HashTable<Team> teamsHash;
+    HashTable<UnionFindNode<Team*,Player*>> playersHash;
     int number_of_teams = 0;
     int number_of_all_teams = 0;
 	//

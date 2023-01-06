@@ -25,6 +25,7 @@ struct Player {
     int cards;
     int teamGamesPlayed_preAdd;
     bool goalKeeper;
+    permutation_t partialSpirit_preAdd;
     permutation_t partialSpirit;
     //std::weak_ptr<Team> teamP;
     //std::weak_ptr<Player> close_PrevPlayer;
@@ -53,7 +54,7 @@ struct Player {
         this->cards = player.cards;
         this->teamGamesPlayed_preAdd = player.teamGamesPlayed_preAdd;
         this->goalKeeper = player.goalKeeper;
-        this->teamP = player.teamP;
+        //this->teamP = player.teamP;
         //this->close_PrevPlayer = player.close_PrevPlayer;
         //this->close_NextPlayer = player.close_NextPlayer;
         return *this;
