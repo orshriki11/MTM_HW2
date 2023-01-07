@@ -160,24 +160,20 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2) {
 
 output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
 
+    if(playerId <= 0){
+        return StatusType::INVALID_INPUT;
+    }
     // TODO: Correctly Fetch player data
-    UnionFindNode<Team *, Player *> *player_node = playersHash.search(playerId);
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = playersHash.search(playerId);
     if(player_node == nullptr)
     {
         return StatusType::FAILURE;
     }
-    Player *player = player_node->data;
     int gamesFromUF = playersHash.search(playerId)->FindGamesPlayed();
+    //FIXME why is this unused? what is the logic?
     int gamesTotalPlayed = player_node->Find()->gamesPlayed;
 
-
-
-
-
-
-    //int played_games = player->gamesPlayed +
-    //int gamesPlayed = player.gamesPlayed + (player.teamP.lock()->gamesPlayed - player.teamGamesPlayed_preAdd);
-    return gamesFromUF + player->gamesPlayed;
+    return gamesFromUF + player_node->data->gamesPlayed;
 }
 
 StatusType world_cup_t::add_player_cards(int playerId, int cards) {
