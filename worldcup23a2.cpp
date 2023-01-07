@@ -109,6 +109,9 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     team_of_Player->totalCards += cards;
     team_of_Player->teamSpirit = team_of_Player->teamSpirit * spirit;
 
+    teamsTreeByAbility.remove(*team_of_Player);
+    teamsTreeByAbility.insert(*team_of_Player, team_of_Player);
+
     return StatusType::SUCCESS;
 }
 
@@ -233,7 +236,6 @@ output_t<int> world_cup_t::get_ith_pointless_ability(int i) {
         return StatusType::FAILURE;
     }
 
-    // TODO: Your code goes here
     return team->teamId;
 }
 
