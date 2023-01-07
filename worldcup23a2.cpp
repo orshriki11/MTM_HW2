@@ -116,41 +116,45 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2) {
     if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2) {
         return StatusType::INVALID_INPUT;
     }
-    int resultState;
-    std::shared_ptr<Team> Team1 = *teamsHash.search(teamId1);
-    std::shared_ptr<Team> Team2 = *teamsHash.search(teamId2);
-    if (Team1 == nullptr || Team2 == nullptr || Team1->gksCount < 1 || Team2->gksCount < 1) {
+
+    std::shared_ptr<Team> team1;
+    std::shared_ptr<Team> team2;
+    AVLTreeResult res1 = teamsTreeById.find(teamId1, &team1);
+    AVLTreeResult res2 = teamsTreeById.find(teamId2, &team2);
+    if (res1 != AVL_TREE_SUCCESS || res2 != AVL_TREE_SUCCESS || team1->gksCount < 1 || team2->gksCount < 1) {
         return StatusType::FAILURE;
     }
-    int team1_score = Team1->totalAbility + Team1->points;
-    int team2_score = Team2->totalAbility + Team2->points;
+
+    int resultState;
+    int team1_score = team1->totalAbility + team1->points;
+    int team2_score = team2->totalAbility + team2->points;
     if (team1_score > team2_score) {
-        Team1->points += 3;
+        team1->points += 3;
         resultState = 1;
     } else if (team2_score > team1_score) {
-        Team2->points += 3;
+        team2->points += 3;
         resultState = 3;
-    } else if (team2_score == team1_score) {
-        int team1_strength = Team1->teamSpirit.strength();
-        int team2_strength = Team2->teamSpirit.strength();
+    } else {
+        int team1_strength = team1->teamSpirit.strength();
+        int team2_strength = team2->teamSpirit.strength();
         if (team1_strength > team2_strength) {
-            Team1->points += 3;
+            team1->points += 3;
             resultState = 2;
         } else if (team1_strength < team2_strength) {
-            Team2->points += 3;
+            team2->points += 3;
             resultState = 4;
         } else {
-            Team1->points++;
-            Team2->points++;
+            team1->points++;
+            team2->points++;
             resultState = 0;
         }
     }
 
-    Team1->gamesPlayed++;
-    Team1->UF_Team->gamesPlayed_whenBought++;
-    Team2->gamesPlayed++;
-    Team2->UF_Team->gamesPlayed_whenBought++;
-    // TODO: Your code goes here
+    team1->gamesPlayed++;
+    team1->UF_Team->gamesPlayed_whenBought++;
+    team2->gamesPlayed++;
+    team2->UF_Team->gamesPlayed_whenBought++;
+
     return resultState;
 }
 
