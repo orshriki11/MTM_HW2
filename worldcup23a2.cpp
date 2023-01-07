@@ -231,7 +231,7 @@ output_t<int> world_cup_t::get_ith_pointless_ability(int i) {
     }
 
     std::shared_ptr<Team> team;
-    if(teamsTreeByAbility.get_ith_ranked_element(i, &team) != AVL_TREE_SUCCESS)
+    if(teamsTreeByAbility.get_ith_ranked_element(i + 1, &team) != AVL_TREE_SUCCESS)
     {
         return StatusType::FAILURE;
     }
