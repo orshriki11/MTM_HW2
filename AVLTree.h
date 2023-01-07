@@ -162,7 +162,7 @@ public:
 
     AVLTreeResult find(const K &key, T *found_data);
 
-    AVLTreeResult contains(const K &key);
+    bool contains(const K &key);
 
     void print_inorder_with_bf();
 
@@ -352,13 +352,9 @@ AVLTreeResult AVLTree<K, T>::find(const K &key, T *found_data) {
 
 
 template<class K, class T>
-AVLTreeResult AVLTree<K, T>::contains(const K &key) {
+bool AVLTree<K, T>::contains(const K &key) {
     Node<K, T> *found_node = find_aux(this->root(), key);
-    if (found_node == NULL) {
-        return AVL_TREE_DOES_NOT_EXIST;
-    }
-
-    return AVL_TREE_SUCCESS;
+    return found_node != NULL;
 }
 
 /*helper function who's purpose is to balance our tree from the bottom up starting from the parent of the last inserted or removed node*/
@@ -849,20 +845,20 @@ K *AVLTree<K, T>::get_next_inorder(const K &key) {
 
 template<class K, class T>
 AVLTreeResult AVLTree<K, T>::get_ith_ranked_element(int rank, T *data) {
-    if (Node<K,T>::get_subtree_size(root()) < rank || rank < 1) {
+    if (Node<K, T>::get_subtree_size(root()) < rank || rank < 1) {
         return AVL_TREE_RANK_OUT_OF_RANGE;
     }
 
     Node<K, T> *current = root();
-    int r = 1 + Node<K,T>::get_subtree_size(current->left_son);
+    int r = 1 + Node<K, T>::get_subtree_size(current->left_son);
 
     while (r != rank) {
         if (rank > r) {
             current = current->right_son;
-            r = r + Node<K,T>::get_subtree_size(current->left_son) + 1;
+            r = r + Node<K, T>::get_subtree_size(current->left_son) + 1;
         } else if (rank < r) {
             current = current->left_son;
-            r = Node<K,T>::get_subtree_size(current->left_son) + 1;
+            r = Node<K, T>::get_subtree_size(current->left_son) + 1;
         }
     }
     *data = current->data;

@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "Player.h"
 #include "wet2util.h"
+#include "UnionFindNode.h"
 
 struct Player; // forward declaration
 
@@ -26,28 +27,49 @@ struct Team {
     bool isKosher;
     int totalAbility;
     bool isRemoved;
-    permutation_t totalSpirit;
+    int GamesPlayed_preBought;
+    bool isNew;
+    permutation_t teamSpirit;
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *UF_Team;
 
 
-    AVLTree<int, std::shared_ptr<Player>> teamPlayers_byID;
-    AVLTree<Player, int> teamPlayers_byRank;
+/*    AVLTree<int, std::shared_ptr<Player>> teamPlayers_byID;
+    AVLTree<Player, int> teamPlayers_byRank;*/
 
     Team(int teamId) : teamId(teamId),
-                       points(points),
-                       totalGoals(0),
+                       points(0),
                        totalCards(0),
                        gamesPlayed(0),
                        gksCount(0),
                        playersCount(0),
                        isKosher(false),
                        isRemoved(false),
-                       totalSpirit(1){
+                       teamSpirit(),
+                       GamesPlayed_preBought(0),
+                       isNew(true){
     }
 
     Team() = default;
 
-    ~Team(){
+    ~Team() {
     };
+
+    bool operator<(const Team& other) const {
+        if (totalAbility == other.totalAbility) {
+            return teamId < other.teamId;
+        } else {
+            return totalAbility < other.totalAbility;
+        }
+    }
+
+    bool operator==(const Team& other) const {
+        return teamId == other.teamId;
+    }
+
+    bool operator>(const Team& other) const {
+        return !(*this < other || *this == other);
+    }
+
 
 };
 

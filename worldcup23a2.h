@@ -18,20 +18,29 @@
 #include "wet2util.h"
 #include "Player.h"
 #include "Team.h"
-class world_cup_t {
-private:
+#include "HashTable.h"
+#include "AVLTree.h"
+#include "UnionFindNode.h"
 
-    int number_of_teams = 0;
-    int number_of_all_teams = 0;
-	//
-	// Here you may add anything you want
-	//
-	
+class world_cup_t{
+private:
+    HashTable<std::shared_ptr<Team>> teamsHash;
+    HashTable<UnionFindNode<std::shared_ptr<Team>,std::shared_ptr<Player>>> playersHash;
+    int numberOfActiveTeams;
+    int numberOfAllTeams;
+	AVLTree<int, std::shared_ptr<Team>> teamsTreeById;
+    AVLTree<Team, std::shared_ptr<Team>> teamsTreeByAbility;
+
 public:
 	// <DO-NOT-MODIFY> {
 	
 	world_cup_t();
-	virtual ~world_cup_t();
+
+    ~world_cup_t() = default;
+
+    world_cup_t(const world_cup_t&) = default;
+
+    world_cup_t& operator=(const world_cup_t&) = default;
 	
 	StatusType add_team(int teamId);
 	

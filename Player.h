@@ -18,21 +18,22 @@ struct Team; // forward declaration
 struct Player {
     int playerId;
     int teamId;
-    permutation_t teamSpirit;
+    permutation_t spirit;
     int gamesPlayed;
     int ability;
     //int goals;
     int cards;
     int teamGamesPlayed_preAdd;
     bool goalKeeper;
+    permutation_t partialSpirit_preAdd;
     permutation_t partialSpirit;
-    std::weak_ptr<Team> teamP;
+    //std::weak_ptr<Team> teamP;
     //std::weak_ptr<Player> close_PrevPlayer;
     //std::weak_ptr<Player> close_NextPlayer;
 
-    Player(int playerId, int teamId, const permutation_t &spirit int gamesPlayed,int ability, int cards, bool goalKeeper, std::weak_ptr<Team> team)
-            : playerId(playerId), teamId(teamId),teamSpirit(spirit), gamesPlayed(gamesPlayed), cards(cards),
-              goalKeeper(goalKeeper), teamP(team), partialSpirit(1) {
+    Player(int playerId, int teamId, const permutation_t &spirit, int gamesPlayed,int ability, int cards, bool goalKeeper)
+            : playerId(playerId), teamId(teamId),spirit(spirit), gamesPlayed(gamesPlayed), cards(cards),
+              goalKeeper(goalKeeper), partialSpirit() {
 
     }
 
@@ -48,12 +49,12 @@ struct Player {
 
         this->playerId = player.playerId;
         this->teamId = player.teamId;
-        this->teamSpirit = player.teamSpirit;
+        this->spirit = player.spirit;
         this->gamesPlayed = player.gamesPlayed;
         this->cards = player.cards;
         this->teamGamesPlayed_preAdd = player.teamGamesPlayed_preAdd;
         this->goalKeeper = player.goalKeeper;
-        this->teamP = player.teamP;
+        //this->teamP = player.teamP;
         //this->close_PrevPlayer = player.close_PrevPlayer;
         //this->close_NextPlayer = player.close_NextPlayer;
         return *this;
