@@ -283,7 +283,6 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     team1->totalCards += team2->totalCards;
     team1->playersCount += team2->playersCount;
     team1->UF_Team->Unite(team2->UF_Team);
-    team2->teamId = -1;
 
     assert(remove_team(teamId2) == StatusType::SUCCESS);
 
