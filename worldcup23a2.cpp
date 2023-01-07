@@ -97,19 +97,18 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
         player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
 
         //TODO make sure this works fine and doesnt lead to mem leaks
-        playersHash.insert(playerId,*player_node);
+        playersHash.insert(playerId,player_node);
     }
     catch (const std::bad_alloc &) {
         return StatusType::ALLOCATION_ERROR;
     }
     // TODO: Add Player as a UpTreeNode and link pointer to hashtable and UF
+    teamsTreeByAbility.remove(*team_of_Player);
     team_of_Player->gksCount += goalKeeper;
     team_of_Player->playersCount++;
     team_of_Player->totalAbility += ability;
     team_of_Player->totalCards += cards;
     team_of_Player->teamSpirit = team_of_Player->teamSpirit * spirit;
-
-    teamsTreeByAbility.remove(*team_of_Player);
     teamsTreeByAbility.insert(*team_of_Player, team_of_Player);
 
     return StatusType::SUCCESS;
@@ -166,12 +165,12 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
     if(playerId <= 0){
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = playersHash.search(playerId);
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *playersHash.search(playerId);
     if(player_node == nullptr)
     {
         return StatusType::FAILURE;
     }
-    int gamesFromUF = playersHash.search(playerId)->FindGamesPlayed();
+    int gamesFromUF = player_node->FindGamesPlayed();
     //FIXME why is this unused? what is the logic?
     int gamesTotalPlayed = player_node->Find()->gamesPlayed;
 
@@ -182,7 +181,7 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards) {
     if (playerId <= 0 || cards < 0) {
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = playersHash.search(playerId);
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *playersHash.search(playerId);
     if (player_node == nullptr) {
         return StatusType::FAILURE;
     }
@@ -202,7 +201,7 @@ output_t<int> world_cup_t::get_player_cards(int playerId) {
     if (playerId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = playersHash.search(playerId);
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *playersHash.search(playerId);
     if (player_node == nullptr) {
         return StatusType::FAILURE;
     }
@@ -243,7 +242,7 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     if (playerId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = playersHash.search(playerId);
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *playersHash.search(playerId);
     if(player_node == nullptr) {
         return StatusType::FAILURE;
     }
@@ -285,6 +284,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     team1->UF_Team->Unite(team2->UF_Team);
 
     assert(remove_team(teamId2) == StatusType::SUCCESS);
+    //team2->teamId = -1;
 
     return StatusType::SUCCESS;
 }
