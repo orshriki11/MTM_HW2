@@ -24,7 +24,7 @@
 
 class world_cup_t{
 private:
-    HashTable<Team> teamsHash;
+    HashTable<std::shared_ptr<Team>> teamsHash;
     HashTable<UnionFindNode<Team*,Player*>> playersHash;
     int numberOfActiveTeams;
     int numberOfAllTeams;

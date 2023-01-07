@@ -28,6 +28,8 @@ struct Team {
     int totalAbility;
     bool isRemoved;
     int GamesPlayed_preBought;
+    bool inHash;
+    bool isNew;
     permutation_t teamSpirit;
     UnionFindNode<Team *, Player *> *UF_Team;
 
@@ -44,7 +46,9 @@ struct Team {
                        isKosher(false),
                        isRemoved(false),
                        teamSpirit(),
-                       GamesPlayed_preBought(0) {
+                       GamesPlayed_preBought(0),
+                       inHash(false),
+                       isNew(true){
     }
 
     Team() = default;

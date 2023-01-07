@@ -64,25 +64,49 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     if(!teamsTreeById.contains(teamId)){
         return StatusType::FAILURE;
     }
-
-    if(!playersHash.search(playerId)){
+    if(playersHash.search(playerId) != nullptr){
         return StatusType::FAILURE;
     }
-    Team *team_of_Player = teamsHash.search(teamId);
+    std::shared_ptr<Team> team_of_Player;
     //UnionFindNode<Team*,Player*>* player_node = playersHash.search(playerId);
-    if (playersHash.search(playerId) != nullptr || team_of_Player == nullptr) {
+    if (playersHash.search(playerId) != nullptr || teamsTreeById.find(teamId, &team_of_Player) != AVL_TREE_SUCCESS) {
         return StatusType::FAILURE;
     }
 
     try {
         Player *new_player = new Player(playerId, teamId, spirit, gamesPlayed, ability, cards, goalKeeper);
 
+        UnionFindNode<Team*, Player*>* player_node = new UnionFindNode<Team*, Player*>(new_player);
+        if(team_of_Player->isNew)
+        {
 
-        UnionFindNode<Team *, Player *> *player_node = new UnionFindNode<Team *, Player *>(new_player);
-        team_of_Player->UF_Team->insert(player_node);
+            team_of_Player->UF_Team = player_node;
+            player_node->master = team_of_Player.get();
+
+        }
+        else
+        {
+            team_of_Player->UF_Team->insert(player_node);
+        }
+        if(!team_of_Player->inHash)
+        {
+            teamsHash.insert(teamId,team_of_Player);
+        }
         player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
-        player_node->linkSpirit = player_node->data->partialSpirit;
-        player_node->data->teamGamesPlayed_preAdd = team_of_Player->gamesPlayed;
+        player_node->linkSpirit = team_of_Player->teamSpirit;
+        player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
+
+        if(team_of_Player->isNew)
+        {
+            playersHash.insert(playerId, *team_of_Player->UF_Team);
+            team_of_Player->isNew = false;
+        }
+        else
+        {
+            playersHash.insert(playerId,*player_node);
+        }
+
+
     }
     catch (const std::bad_alloc &) {
         return StatusType::ALLOCATION_ERROR;
@@ -101,56 +125,76 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2) {
     if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2) {
         return StatusType::INVALID_INPUT;
     }
-    Team *Team1 = teamsHash.search(teamId1);
-    Team *Team2 = teamsHash.search(teamId1);
-    if (Team1 == nullptr || Team2 == nullptr) {
+    int resultState;
+    std::shared_ptr<Team> Team1 = *teamsHash.search(teamId1);
+    std::shared_ptr<Team> Team2 = *teamsHash.search(teamId2);
+    if (Team1 == nullptr || Team2 == nullptr || Team1->gksCount < 1 || Team2->gksCount < 1) {
         return StatusType::FAILURE;
     }
     int team1_score = Team1->totalAbility + Team1->points;
     int team2_score = Team2->totalAbility + Team2->points;
     if (team1_score > team2_score) {
         Team1->points += 3;
+        resultState = 1;
     } else if (team2_score > team1_score) {
         Team2->points += 3;
+        resultState = 3;
     } else if (team2_score == team1_score) {
         int team1_strength = Team1->teamSpirit.strength();
         int team2_strength = Team2->teamSpirit.strength();
         if (team1_strength > team2_strength) {
             Team1->points += 3;
+            resultState = 2;
         } else if (team1_strength < team2_strength) {
             Team2->points += 3;
+            resultState = 4;
         } else {
             Team1->points++;
             Team2->points++;
+            resultState = 0;
         }
     }
 
     Team1->gamesPlayed++;
+    Team1->UF_Team->gamesPlayed_whenBought++;
     Team2->gamesPlayed++;
+    Team2->UF_Team->gamesPlayed_whenBought++;
     // TODO: Your code goes here
-    return StatusType::SUCCESS;
+    return resultState;
 }
 
 output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
 
     // TODO: Correctly Fetch player data
     UnionFindNode<Team *, Player *> *player_node = playersHash.search(playerId);
+    if(player_node == nullptr)
+    {
+        return StatusType::FAILURE;
+    }
     Player *player = player_node->data;
+    int gamesFromUF = playersHash.search(playerId)->FindGamesPlayed();
+    int gamesTotalPlayed = player_node->Find()->gamesPlayed;
+
+
+
+
 
 
     //int played_games = player->gamesPlayed +
     //int gamesPlayed = player.gamesPlayed + (player.teamP.lock()->gamesPlayed - player.teamGamesPlayed_preAdd);
-    return 22;
+    return gamesFromUF + player->gamesPlayed;
 }
 
 StatusType world_cup_t::add_player_cards(int playerId, int cards) {
     if (playerId <= 0 || cards < 0) {
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<Team *, Player *> *player_node = playersHash.search(playerId);
+
+    UnionFindNode<Team*, Player*> *player_node = playersHash.search(playerId);
     if (player_node == nullptr) {
         return StatusType::FAILURE;
     }
+
     Team *team = player_node->Find();
 
     team->totalCards += cards;
@@ -167,7 +211,6 @@ output_t<int> world_cup_t::get_player_cards(int playerId) {
     if (player_node == nullptr) {
         return StatusType::FAILURE;
     }
-
     int cards = player_node->data->cards;
     return cards;
 }
@@ -177,7 +220,7 @@ output_t<int> world_cup_t::get_team_points(int teamId) {
         return StatusType::INVALID_INPUT;
     }
     // TODO: Correctly Fetch Team data
-    Team *team = teamsHash.search(teamId);
+    std::shared_ptr<Team> team = *teamsHash.search(teamId);
 
     if (team == nullptr) {
         return StatusType::FAILURE;
@@ -192,17 +235,31 @@ output_t<int> world_cup_t::get_ith_pointless_ability(int i) {
         return StatusType::FAILURE;
     }
 
+    std::shared_ptr<Team> team;
+    if(teamsTreeByAbility.get_ith_ranked_element(i, &team) != AVL_TREE_SUCCESS)
+    {
+        return StatusType::FAILURE;
+    }
 
     // TODO: Your code goes here
-    return 12345;
+    return team->teamId;
 }
 
 output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     if (playerId <= 0) {
         return StatusType::INVALID_INPUT;
     }
+    UnionFindNode<Team*,Player*> *playerNode = playersHash.search(playerId);
+    if(playerNode == nullptr)
+        return  StatusType::FAILURE;
+
+
+    permutation_t playerSpirit = playerNode->data->spirit;
+
+    playerNode->FindSpiritLinks(playerSpirit);
+
     // TODO: Need to figure out how to accumulate spirit from continuous bought teams.
-    //return permutation_t();
+    return permutation_t(playerSpirit);
 }
 
 StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
@@ -210,25 +267,32 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
         return StatusType::INVALID_INPUT;
     }
 
-    Team *Team1 = teamsHash.search(teamId1);
-    Team *Team2 = teamsHash.search(teamId2);
+    std::shared_ptr<Team> Team1 = *teamsHash.search(teamId1);
+    std::shared_ptr<Team> Team2 = *teamsHash.search(teamId2);
 
     if (Team1 == nullptr || Team2 == nullptr) {
         return StatusType::FAILURE;
     }
 
+
     Team1->points += Team2->points;
+    Team2->UF_Team->linkSpirit = Team1->teamSpirit;
+    Team2->UF_Team->link_gamesPlayed = Team1->gamesPlayed;
+    //Team2->UF_Team->gamesPlayed_whenBought = Team2->gamesPlayed;
     Team1->teamSpirit = Team2->teamSpirit * Team1->teamSpirit;
     Team1->totalAbility += Team2->totalAbility;
     Team1->gksCount += Team2->gksCount;
     Team1->totalCards += Team2->totalCards;
     Team1->playersCount += Team2->playersCount;
     Team1->UF_Team->Unite(Team2->UF_Team);
+    Team2->teamId = -1;
+
+    teamsHash.remove(teamId2);
 
 
 
 
 
-    // TODO: Need to properly modify player's part_spirit when teams are bought continuesly.
+
     return StatusType::SUCCESS;
 }

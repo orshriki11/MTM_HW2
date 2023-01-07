@@ -18,7 +18,7 @@ struct Team; // forward declaration
 struct Player {
     int playerId;
     int teamId;
-    permutation_t teamSpirit;
+    permutation_t spirit;
     int gamesPlayed;
     int ability;
     //int goals;
@@ -32,7 +32,7 @@ struct Player {
     //std::weak_ptr<Player> close_NextPlayer;
 
     Player(int playerId, int teamId, const permutation_t &spirit, int gamesPlayed,int ability, int cards, bool goalKeeper)
-            : playerId(playerId), teamId(teamId),teamSpirit(spirit), gamesPlayed(gamesPlayed), cards(cards),
+            : playerId(playerId), teamId(teamId),spirit(spirit), gamesPlayed(gamesPlayed), cards(cards),
               goalKeeper(goalKeeper), partialSpirit() {
 
     }
@@ -49,7 +49,7 @@ struct Player {
 
         this->playerId = player.playerId;
         this->teamId = player.teamId;
-        this->teamSpirit = player.teamSpirit;
+        this->spirit = player.spirit;
         this->gamesPlayed = player.gamesPlayed;
         this->cards = player.cards;
         this->teamGamesPlayed_preAdd = player.teamGamesPlayed_preAdd;
