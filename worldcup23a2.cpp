@@ -211,15 +211,15 @@ output_t<int> world_cup_t::get_team_points(int teamId) {
     if (teamId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    // TODO: Correctly Fetch Team data
-    std::shared_ptr<Team> team = *teamsHash.search(teamId);
 
-    if (team == nullptr) {
+    std::shared_ptr<Team> team;
+    AVLTreeResult res = teamsTreeById.find(teamId, &team);
+
+    if (res != AVL_TREE_SUCCESS) {
         return StatusType::FAILURE;
     }
 
-    int points = team->points;
-    return points;
+    return team->points;
 }
 
 output_t<int> world_cup_t::get_ith_pointless_ability(int i) {
