@@ -264,32 +264,28 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
         return StatusType::INVALID_INPUT;
     }
 
-    std::shared_ptr<Team> Team1 = *teamsHash.search(teamId1);
-    std::shared_ptr<Team> Team2 = *teamsHash.search(teamId2);
-
-    if (Team1 == nullptr || Team2 == nullptr) {
+    std::shared_ptr<Team> team1;
+    std::shared_ptr<Team> team2;
+    AVLTreeResult res1 = teamsTreeById.find(teamId1, &team1);
+    AVLTreeResult res2 = teamsTreeById.find(teamId2, &team2);
+    if (res1 != AVL_TREE_SUCCESS || res2 != AVL_TREE_SUCCESS) {
         return StatusType::FAILURE;
     }
 
-
-    Team1->points += Team2->points;
-    Team2->UF_Team->linkSpirit = Team1->teamSpirit;
-    Team2->UF_Team->link_gamesPlayed = Team1->gamesPlayed;
+    //TODO: check logic here. games played, spirit
+    team1->points += team2->points;
+    team2->UF_Team->linkSpirit = team1->teamSpirit;
+    team2->UF_Team->link_gamesPlayed = team1->gamesPlayed;
     //Team2->UF_Team->gamesPlayed_whenBought = Team2->gamesPlayed;
-    Team1->teamSpirit = Team2->teamSpirit * Team1->teamSpirit;
-    Team1->totalAbility += Team2->totalAbility;
-    Team1->gksCount += Team2->gksCount;
-    Team1->totalCards += Team2->totalCards;
-    Team1->playersCount += Team2->playersCount;
-    Team1->UF_Team->Unite(Team2->UF_Team);
-    Team2->teamId = -1;
+    team1->teamSpirit = team2->teamSpirit * team1->teamSpirit;
+    team1->totalAbility += team2->totalAbility;
+    team1->gksCount += team2->gksCount;
+    team1->totalCards += team2->totalCards;
+    team1->playersCount += team2->playersCount;
+    team1->UF_Team->Unite(team2->UF_Team);
+    team2->teamId = -1;
 
-    teamsHash.remove(teamId2);
-
-
-
-
-
+    assert(remove_team(teamId2) == StatusType::SUCCESS);
 
     return StatusType::SUCCESS;
 }
