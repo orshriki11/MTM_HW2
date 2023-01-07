@@ -103,13 +103,12 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
         return StatusType::ALLOCATION_ERROR;
     }
     // TODO: Add Player as a UpTreeNode and link pointer to hashtable and UF
+    teamsTreeByAbility.remove(*team_of_Player);
     team_of_Player->gksCount += goalKeeper;
     team_of_Player->playersCount++;
     team_of_Player->totalAbility += ability;
     team_of_Player->totalCards += cards;
     team_of_Player->teamSpirit = team_of_Player->teamSpirit * spirit;
-
-    teamsTreeByAbility.remove(*team_of_Player);
     teamsTreeByAbility.insert(*team_of_Player, team_of_Player);
 
     return StatusType::SUCCESS;
