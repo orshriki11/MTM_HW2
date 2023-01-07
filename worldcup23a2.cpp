@@ -163,7 +163,6 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
     if(playerId <= 0){
         return StatusType::INVALID_INPUT;
     }
-    // TODO: Correctly Fetch player data
     UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = playersHash.search(playerId);
     if(player_node == nullptr)
     {
@@ -180,13 +179,15 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards) {
     if (playerId <= 0 || cards < 0) {
         return StatusType::INVALID_INPUT;
     }
-
-    UnionFindNode<Team*, Player*> *player_node = playersHash.search(playerId);
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = playersHash.search(playerId);
     if (player_node == nullptr) {
         return StatusType::FAILURE;
     }
 
-    Team *team = player_node->Find();
+    std::shared_ptr<Team> team = player_node->Find();
+    if(team->isRemoved) {
+        return StatusType::FAILURE;
+    }
 
     team->totalCards += cards;
     player_node->data->cards += cards;
