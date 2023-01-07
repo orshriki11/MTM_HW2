@@ -28,10 +28,9 @@ struct Team {
     int totalAbility;
     bool isRemoved;
     int GamesPlayed_preBought;
-    bool inHash;
     bool isNew;
     permutation_t teamSpirit;
-    UnionFindNode<Team *, Player *> *UF_Team;
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *UF_Team;
 
 
 /*    AVLTree<int, std::shared_ptr<Player>> teamPlayers_byID;
@@ -47,7 +46,6 @@ struct Team {
                        isRemoved(false),
                        teamSpirit(),
                        GamesPlayed_preBought(0),
-                       inHash(false),
                        isNew(true){
     }
 

@@ -67,46 +67,37 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     if(playersHash.search(playerId) != nullptr){
         return StatusType::FAILURE;
     }
+
     std::shared_ptr<Team> team_of_Player;
-    //UnionFindNode<Team*,Player*>* player_node = playersHash.search(playerId);
-    if (playersHash.search(playerId) != nullptr || teamsTreeById.find(teamId, &team_of_Player) != AVL_TREE_SUCCESS) {
-        return StatusType::FAILURE;
-    }
+    teamsTreeById.find(teamId, &team_of_Player);
 
     try {
-        Player *new_player = new Player(playerId, teamId, spirit, gamesPlayed, ability, cards, goalKeeper);
+        std::shared_ptr<Player> new_player = std::make_shared<Player>(playerId, teamId, spirit, gamesPlayed, ability, cards, goalKeeper);
+        UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>* player_node = new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>(new_player);
 
-        UnionFindNode<Team*, Player*>* player_node = new UnionFindNode<Team*, Player*>(new_player);
         if(team_of_Player->isNew)
         {
+            if(teamsHash.search(teamId) != nullptr){
+                teamsHash.remove(teamId);
+            }
+            teamsHash.insert(teamId,team_of_Player);
 
             team_of_Player->UF_Team = player_node;
-            player_node->master = team_of_Player.get();
-
-        }
-        else
-        {
-            team_of_Player->UF_Team->insert(player_node);
-        }
-        if(!team_of_Player->inHash)
-        {
-            teamsHash.insert(teamId,team_of_Player);
-        }
-        player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
-        player_node->linkSpirit = team_of_Player->teamSpirit;
-        player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
-
-        if(team_of_Player->isNew)
-        {
-            playersHash.insert(playerId, *team_of_Player->UF_Team);
+            player_node->master = team_of_Player;
             team_of_Player->isNew = false;
         }
         else
         {
-            playersHash.insert(playerId,*player_node);
+            assert(team_of_Player->UF_Team != nullptr);
+            team_of_Player->UF_Team->insert(player_node);
         }
 
+        player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
+        player_node->linkSpirit = team_of_Player->teamSpirit;
+        player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
 
+        //TODO make sure this works fine and doesnt lead to mem leaks
+        playersHash.insert(playerId,*player_node);
     }
     catch (const std::bad_alloc &) {
         return StatusType::ALLOCATION_ERROR;
