@@ -243,14 +243,17 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     if (playerId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<Team*,Player*> *playerNode = playersHash.search(playerId);
-    if(playerNode == nullptr)
-        return  StatusType::FAILURE;
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = playersHash.search(playerId);
+    if(player_node == nullptr) {
+        return StatusType::FAILURE;
+    }
+    if(player_node->Find()->isRemoved) {
+        return StatusType::FAILURE;
+    }
 
+    permutation_t playerSpirit = player_node->data->spirit;
 
-    permutation_t playerSpirit = playerNode->data->spirit;
-
-    playerNode->FindSpiritLinks(playerSpirit);
+    player_node->FindSpiritLinks(playerSpirit);
 
     // TODO: Need to figure out how to accumulate spirit from continuous bought teams.
     return permutation_t(playerSpirit);
