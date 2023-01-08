@@ -43,12 +43,8 @@ int main()
 	
 	// Execute all commands in file
 	string op;
-    int i = 0;
-    freopen(R"(C:\Users\hilla\CLionProjects\MTM_HW2\test.in)","r",stdin);
 	while (cin >> op)
 	{
-        i++;
-        cout << i << ": ";
 		if (!op.compare("add_team"))
 		{
 			cin >> tid;
