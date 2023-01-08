@@ -38,7 +38,7 @@ public:
 
     //UnionFindNode<K,T>* FindRoot(UnionFindNode<K,T>* key);
 
-    UnionFindNode<K,T>* FindRoot(permutation_t &totalSpirit,int &pre_gamesPlayed);
+    UnionFindNode<K,T>* FindRoot(permutation_t *totalSpirit,int &pre_gamesPlayed);
 
     K Find();
 
@@ -46,14 +46,16 @@ public:
 
     void Unite(UnionFindNode<K,T>* x);
 
-    void FindSpiritLinks(permutation_t &totalSpirit);
+    K FindWithSpirit(permutation_t *totalSpirit);
+
+    //void FindSpiritLinks(permutation_t *totalSpirit);
 
     int FindGamesPlayed();
 
 
     //void Unite(UnionFindNode<K,T>* x, UnionFindNode<K,T>* y);
 
-    K getMaster();
+    //K getMaster();
 };
 
 template<class K,class T>
@@ -138,21 +140,21 @@ template<class K,class T>
 K UnionFindNode<K,T>::Find() {
     permutation_t totalSpirit = permutation_t::neutral();
     int wow;
-    UnionFindNode<K,T>* root = this->FindRoot(totalSpirit,wow);
+    UnionFindNode<K,T>* root = this->FindRoot(&totalSpirit,wow);
     return root->master;
 }
 
 template<class K,class T>
-UnionFindNode<K,T>* UnionFindNode<K,T>::FindRoot(permutation_t &totalSpirit, int &pre_gamesPlayed) {
+UnionFindNode<K,T>* UnionFindNode<K,T>::FindRoot(permutation_t *totalSpirit, int &pre_gamesPlayed) {
     if(parent != nullptr)
     {
         UnionFindNode<K,T>* key_root = parent->FindRoot(totalSpirit,pre_gamesPlayed);
-        totalSpirit = totalSpirit * linkSpirit;
+        *totalSpirit = *totalSpirit * linkSpirit;
 
         pre_gamesPlayed -= link_gamesPlayed;
         pre_gamesPlayed += gamesPlayed_whenBought;
         parent = key_root;
-        linkSpirit = totalSpirit;
+        linkSpirit = *totalSpirit;
         link_gamesPlayed = pre_gamesPlayed;
         return key_root;
     }
@@ -164,20 +166,28 @@ UnionFindNode<K,T>* UnionFindNode<K,T>::FindRoot(permutation_t &totalSpirit, int
 }
 
 template<class K,class T>
-void UnionFindNode<K,T>::FindSpiritLinks(permutation_t &totalSpirit)
+K UnionFindNode<K,T>::FindWithSpirit(permutation_t *totalSpirit) {
+    //permutation_t totalSpirit = permutation_t::neutral();
+    int wow = 0;
+    UnionFindNode<K,T>* root = this->FindRoot(totalSpirit,wow);
+    return root->master;
+}
+
+/*template<class K,class T>
+void UnionFindNode<K,T>::FindSpiritLinks(permutation_t *totalSpirit)
 {
     permutation_t sumSpirit = permutation_t::neutral();
     int gamesPlayed = 0;
-    this->FindRoot(sumSpirit,gamesPlayed);
-    totalSpirit = totalSpirit * sumSpirit;
-}
+    this->FindRoot(&sumSpirit,gamesPlayed);
+    *totalSpirit = *totalSpirit * sumSpirit;
+}*/
 
 template<class K,class T>
 int UnionFindNode<K,T>::FindGamesPlayed()
 {
     int gamesToSub = 0;
     permutation_t totalSpirit = permutation_t::neutral();
-    this->FindRoot(totalSpirit,gamesToSub);
+    this->FindRoot(&totalSpirit,gamesToSub);
     return gamesToSub;
 }
 
@@ -187,8 +197,8 @@ void UnionFindNode<K,T>::Unite(UnionFindNode<K,T>* x) {
 
     permutation_t totalSpirit = permutation_t::neutral();
     int gamesPlayed = 0;
-    UnionFindNode<K,T>* x_Root = x->FindRoot(totalSpirit,gamesPlayed);
-    UnionFindNode<K,T>* y_Root = this->FindRoot(totalSpirit,gamesPlayed);
+    UnionFindNode<K,T>* x_Root = x->FindRoot(&totalSpirit,gamesPlayed);
+    UnionFindNode<K,T>* y_Root = this->FindRoot(&totalSpirit,gamesPlayed);
     if(x_Root == y_Root)
         return;
     if(y_Root->initNode)
@@ -222,10 +232,10 @@ void UnionFindNode<K,T>::Unite(UnionFindNode<K,T>* x, UnionFindNode<K,T>* y) {
     }
 }*/
 
-template<class K, class T>
+/*template<class K, class T>
 K UnionFindNode<K,T>::getMaster() {
     return master;
-}
+}*/
 
 
 #endif //MTM_HW2_UNIONFINDNODE_H
