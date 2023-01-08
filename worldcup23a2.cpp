@@ -195,10 +195,12 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards) {
     if (playerId <= 0 || cards < 0) {
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *playersHash.search(playerId);
-    if (player_node == nullptr) {
+
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> **player_node_ptr = playersHash.search(playerId);
+    if (player_node_ptr == nullptr) {
         return StatusType::FAILURE;
     }
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *player_node_ptr;
 
     std::shared_ptr<Team> team = player_node->Find();
     if(team->isRemoved) {
