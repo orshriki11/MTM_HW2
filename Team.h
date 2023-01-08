@@ -19,15 +19,13 @@ struct Player; // forward declaration
 struct Team {
     int teamId;
     int points;
-    //int totalGoals;
     int totalCards;
     int gamesPlayed;
     int gksCount;
     int playersCount;
-    bool isKosher;
     int totalAbility;
     bool isRemoved;
-    int GamesPlayed_preBought;
+    //int GamesPlayed_preBought;
     bool isNew;
     permutation_t teamSpirit;
     UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *UF_Team;
@@ -36,17 +34,19 @@ struct Team {
 /*    AVLTree<int, std::shared_ptr<Player>> teamPlayers_byID;
     AVLTree<Player, int> teamPlayers_byRank;*/
 
-    Team(int teamId) : teamId(teamId),
+    explicit Team(int teamId) : teamId(teamId),
                        points(0),
                        totalCards(0),
                        gamesPlayed(0),
                        gksCount(0),
                        playersCount(0),
-                       isKosher(false),
+                       totalAbility(0),
                        isRemoved(false),
-                       teamSpirit(),
-                       GamesPlayed_preBought(0),
-                       isNew(true){
+                       isNew(true),
+
+                       UF_Team(new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>)
+                       {
+        teamSpirit = permutation_t::neutral();
     }
 
     Team() = default;

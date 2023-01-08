@@ -201,7 +201,7 @@ void HashTable<T>::rehash() {
     }
     //use overloaded = operator - old hash = new hash
     *this = new_hash_table;
-    int x = 2;
+    //int x = 2;
 }
 
 template<class T>

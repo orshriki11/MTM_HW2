@@ -25,15 +25,22 @@ struct Player {
     int cards;
     int teamGamesPlayed_preAdd;
     bool goalKeeper;
-    permutation_t partialSpirit_preAdd;
+    //permutation_t partialSpirit_preAdd;
     permutation_t partialSpirit;
     //std::weak_ptr<Team> teamP;
     //std::weak_ptr<Player> close_PrevPlayer;
     //std::weak_ptr<Player> close_NextPlayer;
 
     Player(int playerId, int teamId, const permutation_t &spirit, int gamesPlayed,int ability, int cards, bool goalKeeper)
-            : playerId(playerId), teamId(teamId),spirit(spirit), gamesPlayed(gamesPlayed), cards(cards),
-              goalKeeper(goalKeeper), partialSpirit() {
+            : playerId(playerId),
+            teamId(teamId),
+            spirit(spirit),
+            gamesPlayed(gamesPlayed),
+            ability(ability),
+            cards(cards),
+            teamGamesPlayed_preAdd(0),
+            goalKeeper(goalKeeper),
+              partialSpirit(){
 
     }
 
@@ -52,6 +59,7 @@ struct Player {
         this->spirit = player.spirit;
         this->gamesPlayed = player.gamesPlayed;
         this->cards = player.cards;
+        this->ability = player.ability;
         this->teamGamesPlayed_preAdd = player.teamGamesPlayed_preAdd;
         this->goalKeeper = player.goalKeeper;
         //this->teamP = player.teamP;
