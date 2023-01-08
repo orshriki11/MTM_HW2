@@ -77,7 +77,8 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     try {
         std::shared_ptr<Player> new_player = std::make_shared<Player>(playerId, teamId, spirit, gamesPlayed, ability, cards, goalKeeper);
         auto* player_node = new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>(new_player);
-
+        if(playerId == 68208)
+            bool thatP = true;
         if(team_of_Player->isNew)
         {
             player_node->master = team_of_Player;
@@ -117,6 +118,8 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     team_of_Player->teamSpirit = team_of_Player->teamSpirit * spirit;
     teamsTreeByAbility.insert(*team_of_Player, team_of_Player);
 
+    if(playerId == 68208)
+        auto wow = playersHash.search(playerId);
     return StatusType::SUCCESS;
 }
 
@@ -188,20 +191,25 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards) {
         return StatusType::INVALID_INPUT;
     }
 
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> **player_node_ptr = playersHash.search(playerId);
+    auto player_node_ptr = playersHash.search(playerId);
     if (player_node_ptr == nullptr) {
         return StatusType::FAILURE;
     }
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *player_node_ptr;
+    //UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *player_node_ptr;
 
-    std::shared_ptr<Team> team = player_node->Find();
+    std::shared_ptr<Team> team = (*player_node_ptr)->Find();
     if(team->isRemoved) {
         return StatusType::FAILURE;
     }
 
     team->totalCards += cards;
-    player_node->data->cards += cards;
+    (*player_node_ptr)->data->cards += cards;
 
+    if(playerId == 68208)
+    {
+        auto player_node_ptr_test = playersHash.search(playerId);
+        int wow = 0;
+    }
     return StatusType::SUCCESS;
 }
 
@@ -254,6 +262,8 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     if(playerId == 68208)
         bool wowww = true;
     //FIXME Used For debug
+
+    int test = 1;
     auto player_node_ptr = playersHash.search(playerId);
     if(player_node_ptr == nullptr) {
         return StatusType::FAILURE;
