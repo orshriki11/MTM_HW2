@@ -18,7 +18,7 @@ https://pastebin.com/tzWiFv1r
 
 https://pastebin.com/PEJk5BkC
 
-The latest push is in Final_debug branch.
+The latest push is in Debug_Final branch.
 
 Hopefully i'll fix those issues before you wake up! :D
 
