@@ -1,6 +1,6 @@
 # MTM_HW2
 
-Hi hillah, I just went to sleep (didn't wanna send a whatsapp message so it won't wake you up). 
+Hi Hillah, I just went to sleep (didn't wanna send a whatsapp message so it won't wake you up). 
 Hopefully you'll see this message if I won't wake up in time. 
 
 The code passed the basic tests but is having problem with the advanced and difficult memleaks tests.
