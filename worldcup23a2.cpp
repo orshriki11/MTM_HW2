@@ -80,12 +80,6 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 
         if(team_of_Player->isNew)
         {
-            if(teamsHash.search(teamId) != nullptr){
-                teamsHash.remove(teamId);
-            }
-            teamsHash.insert(teamId,team_of_Player);
-
-
             player_node->master = team_of_Player;
             player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
             player_node->linkSpirit = team_of_Player->teamSpirit;
