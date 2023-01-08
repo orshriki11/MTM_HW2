@@ -107,6 +107,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 
             //TODO make sure this works fine and doesnt lead to mem leaks
             playersHash.insert(playerId,player_node);
+
         }
 
 
@@ -114,7 +115,6 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     catch (const std::bad_alloc &) {
         return StatusType::ALLOCATION_ERROR;
     }
-    // TODO: Add Player as a UpTreeNode and link pointer to hashtable and UF
     teamsTreeByAbility.remove(*team_of_Player);
     team_of_Player->gksCount += goalKeeper;
     team_of_Player->playersCount++;
@@ -177,9 +177,7 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
     if(playerId <= 0){
         return StatusType::INVALID_INPUT;
     }
-    //TODO player_node doesnt like to be nullptr
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> **player_node_ptr;
-    player_node_ptr = playersHash.search(playerId);
+    auto player_node_ptr = playersHash.search(playerId);
     if(player_node_ptr == nullptr)
     {
         return StatusType::FAILURE;
@@ -258,6 +256,10 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     if (playerId <= 0) {
         return StatusType::INVALID_INPUT;
     }
+    //FIXME Used For debug
+    if(playerId == 68208)
+        bool wowww = true;
+    //FIXME Used For debug
     auto player_node_ptr = playersHash.search(playerId);
     if(player_node_ptr == nullptr) {
         return StatusType::FAILURE;
