@@ -94,6 +94,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
             team_of_Player->UF_Team = player_node;
             //TODO make sure this works fine and doesnt lead to mem leaks
             playersHash.insert(playerId,team_of_Player->UF_Team);
+            //auto wow = playersHash.search(playerId);
             team_of_Player->isNew = false;
         }
         else
@@ -285,6 +286,10 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
         return StatusType::FAILURE;
     }
 
+    if(teamsTreeByAbility.remove(*team1) != AVL_TREE_SUCCESS)
+    {
+        return StatusType::FAILURE;
+    }
     //TODO: check logic here. games played, spirit
     team1->points += team2->points;
     team2->UF_Team->linkSpirit = team1->teamSpirit;
@@ -295,10 +300,21 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     team1->gksCount += team2->gksCount;
     team1->totalCards += team2->totalCards;
     team1->playersCount += team2->playersCount;
-    team1->UF_Team->Unite(team2->UF_Team);
+    if(team1->isNew)
+    {
+        team1->UF_Team = team2->UF_Team;
+        team2->UF_Team->master = team1;
+    }
+    else
+    {
+        team1->UF_Team->Unite(team2->UF_Team);
+    }
+
 
     assert(remove_team(teamId2) == StatusType::SUCCESS);
     //team2->teamId = -1;
+    if(teamsTreeByAbility.insert(*team1,team1) != AVLTreeResult::AVL_TREE_SUCCESS)
+        return StatusType::ALLOCATION_ERROR;
 
     return StatusType::SUCCESS;
 }

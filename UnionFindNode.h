@@ -18,10 +18,11 @@ public:
     permutation_t linkSpirit;
     int link_gamesPlayed;
     int whenJoined;
-    //bool initNode;
+
     int gamesPlayed_whenBought;
     //bool isRoot;
     UnionFindNode<K,T>* parent;  // parent in the up tree
+    bool initNode;
 
     explicit UnionFindNode(T Data);
 
@@ -63,7 +64,8 @@ UnionFindNode<K,T>::UnionFindNode(T Data) :
         link_gamesPlayed(0),
         whenJoined(0),
         gamesPlayed_whenBought(0),
-        parent(nullptr)
+        parent(nullptr),
+        initNode(true)
           {
               linkSpirit = permutation_t::neutral();
           }
@@ -75,7 +77,8 @@ UnionFindNode<K,T>::UnionFindNode() : size(1),
                                     link_gamesPlayed(0),
                                     whenJoined(0),
                                     gamesPlayed_whenBought(0),
-                                    parent(nullptr)  {
+                                    parent(nullptr),
+                                      initNode(true){
     linkSpirit = permutation_t::neutral();
                                     }
 
@@ -144,7 +147,6 @@ UnionFindNode<K,T>* UnionFindNode<K,T>::FindRoot(permutation_t &totalSpirit, int
     if(parent != nullptr)
     {
         UnionFindNode<K,T>* key_root = parent->FindRoot(totalSpirit,pre_gamesPlayed);
-        permutation_t test1 = permutation_t::neutral();
         totalSpirit = totalSpirit * linkSpirit;
 
         pre_gamesPlayed -= link_gamesPlayed;
@@ -189,9 +191,18 @@ void UnionFindNode<K,T>::Unite(UnionFindNode<K,T>* x) {
     UnionFindNode<K,T>* y_Root = this->FindRoot(totalSpirit,gamesPlayed);
     if(x_Root == y_Root)
         return;
-    x_Root->whenJoined = y_Root->size + 1;
-    y_Root->size += x_Root->size;
-    x_Root->parent = y_Root;
+    if(y_Root->initNode)
+    {
+        x_Root->parent = nullptr;
+        x_Root->master = y_Root->master;
+        y_Root = x_Root;
+    }
+    else
+    {
+        x_Root->whenJoined = y_Root->size + 1;
+        y_Root->size += x_Root->size;
+        x_Root->parent = y_Root;
+    }
 }
 
 
