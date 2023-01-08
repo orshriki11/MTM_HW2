@@ -18,7 +18,7 @@ https://pastebin.com/tzWiFv1r
 
 https://pastebin.com/PEJk5BkC
 
-NOTICE: Those memory leaks might be due to the 'nodes in hash' issue!
+**NOTICE: Those memory leaks might be due to the 'nodes in hash' issue!**
 
 The latest push is in Debug_Final branch.
 
