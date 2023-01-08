@@ -38,12 +38,15 @@ StatusType world_cup_t::remove_team(int teamId) {
     }
 
     std::shared_ptr<Team> found_team;
-    AVLTreeResult res_by_id = teamsTreeById.find(teamId, &found_team);
-    assert(res_by_id == AVL_TREE_SUCCESS);
+    if(teamsTreeById.find(teamId, &found_team) != AVL_TREE_SUCCESS)
+        return StatusType::FAILURE;
+    //assert(res_by_id == AVL_TREE_SUCCESS);
     AVLTreeResult res_by_ability = teamsTreeByAbility.remove(*found_team);
     AVLTreeResult removed_by_id = teamsTreeById.remove(teamId);
     assert(res_by_ability == AVL_TREE_SUCCESS && removed_by_id == AVL_TREE_SUCCESS);
 
+    if(res_by_ability != AVL_TREE_SUCCESS || removed_by_id != AVL_TREE_SUCCESS)
+        return StatusType::ALLOCATION_ERROR;
     found_team->isRemoved = true;
 
     numberOfActiveTeams--;
@@ -73,7 +76,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 
     try {
         std::shared_ptr<Player> new_player = std::make_shared<Player>(playerId, teamId, spirit, gamesPlayed, ability, cards, goalKeeper);
-        UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>* player_node = new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>(new_player);
+        auto* player_node = new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>(new_player);
 
         if(team_of_Player->isNew)
         {
@@ -82,22 +85,30 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
             }
             teamsHash.insert(teamId,team_of_Player);
 
-            team_of_Player->UF_Team = player_node;
+
             player_node->master = team_of_Player;
+            player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
+            player_node->linkSpirit = team_of_Player->teamSpirit;
+            player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
+
+            team_of_Player->UF_Team = player_node;
+            //TODO make sure this works fine and doesnt lead to mem leaks
+            playersHash.insert(playerId,team_of_Player->UF_Team);
             team_of_Player->isNew = false;
         }
         else
         {
             assert(team_of_Player->UF_Team != nullptr);
             team_of_Player->UF_Team->insert(player_node);
+            player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
+            player_node->linkSpirit = team_of_Player->teamSpirit;
+            player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
+
+            //TODO make sure this works fine and doesnt lead to mem leaks
+            playersHash.insert(playerId,player_node);
         }
 
-        player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
-        player_node->linkSpirit = team_of_Player->teamSpirit;
-        player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
 
-        //TODO make sure this works fine and doesnt lead to mem leaks
-        playersHash.insert(playerId,player_node);
     }
     catch (const std::bad_alloc &) {
         return StatusType::ALLOCATION_ERROR;
@@ -165,16 +176,18 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
     if(playerId <= 0){
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *playersHash.search(playerId);
-    if(player_node == nullptr)
+    //TODO player_node doesnt like to be nullptr
+    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> **player_node_ptr;
+    player_node_ptr = playersHash.search(playerId);
+    if(player_node_ptr == nullptr)
     {
         return StatusType::FAILURE;
     }
-    int gamesFromUF = player_node->FindGamesPlayed();
-    //FIXME why is this unused? what is the logic?
-    int gamesTotalPlayed = player_node->Find()->gamesPlayed;
+    //auto player_node = *player_node_ptr;
+    int gamesFromUF = (*player_node_ptr)->FindGamesPlayed();
+    //int gamesTotalPlayed = player_node->Find()->gamesPlayed;
 
-    return gamesFromUF + player_node->data->gamesPlayed;
+    return gamesFromUF + (*player_node_ptr)->data->gamesPlayed;
 }
 
 StatusType world_cup_t::add_player_cards(int playerId, int cards) {
@@ -242,17 +255,18 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     if (playerId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *playersHash.search(playerId);
-    if(player_node == nullptr) {
+    auto player_node_ptr = playersHash.search(playerId);
+    if(player_node_ptr == nullptr) {
         return StatusType::FAILURE;
     }
-    if(player_node->Find()->isRemoved) {
+    std::shared_ptr<Team> team = (*player_node_ptr)->Find();
+    if(team->isRemoved) {
         return StatusType::FAILURE;
     }
 
-    permutation_t playerSpirit = player_node->data->spirit;
+    permutation_t playerSpirit = (*player_node_ptr)->data->spirit;
 
-    player_node->FindSpiritLinks(playerSpirit);
+    (*player_node_ptr)->FindSpiritLinks(playerSpirit);
 
     // TODO: Need to figure out how to accumulate spirit from continuous bought teams.
     return permutation_t(playerSpirit);

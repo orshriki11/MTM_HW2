@@ -18,12 +18,12 @@ public:
     permutation_t linkSpirit;
     int link_gamesPlayed;
     int whenJoined;
-    bool initNode;
+    //bool initNode;
     int gamesPlayed_whenBought;
     //bool isRoot;
     UnionFindNode<K,T>* parent;  // parent in the up tree
 
-    UnionFindNode(T Data);
+    explicit UnionFindNode(T Data);
 
     UnionFindNode();
 
@@ -56,15 +56,33 @@ public:
 };
 
 template<class K,class T>
-UnionFindNode<K,T>::UnionFindNode(T Data) : data(Data), parent(nullptr), size(1), master(nullptr),link_gamesPlayed(0),gamesPlayed_whenBought(0)  {}
+UnionFindNode<K,T>::UnionFindNode(T Data) :
+        size(1),
+        data(Data),
+        master(nullptr),
+        link_gamesPlayed(0),
+        whenJoined(0),
+        gamesPlayed_whenBought(0),
+        parent(nullptr)
+          {
+              linkSpirit = permutation_t::neutral();
+          }
 
 template<class K,class T>
-UnionFindNode<K,T>::UnionFindNode() : data(T()), parent(nullptr), size(1), master(nullptr),link_gamesPlayed(0),gamesPlayed_whenBought(0) {}
+UnionFindNode<K,T>::UnionFindNode() : size(1),
+                                    data(T()),
+                                    master(nullptr),
+                                    link_gamesPlayed(0),
+                                    whenJoined(0),
+                                    gamesPlayed_whenBought(0),
+                                    parent(nullptr)  {
+    linkSpirit = permutation_t::neutral();
+                                    }
 
 
 template<class K,class T>
 void UnionFindNode<K,T>::insert(UnionFindNode<K,T>* node) {
-    if(this != nullptr)
+    if(this != NULL)
     {
         node->parent = this;
         this->size++;
@@ -76,13 +94,12 @@ void UnionFindNode<K,T>::insert(UnionFindNode<K,T>* node) {
         node->master = master;
 
     }
-    return;
 
 }
 
 template<class K,class T>
 void UnionFindNode<K,T>::MakeSet(T data) {
-    UnionFindNode<K,T> *new_node = new UnionFindNode<K,T>(data);
+    auto *new_node = new UnionFindNode<K,T>(data);
     if(this != nullptr)
     {
         new_node->parent = this;
@@ -92,8 +109,6 @@ void UnionFindNode<K,T>::MakeSet(T data) {
     {
         new_node->parent = nullptr;
     }
-    return;
-
 }
 
 /*template<class K,class T>
@@ -129,7 +144,9 @@ UnionFindNode<K,T>* UnionFindNode<K,T>::FindRoot(permutation_t &totalSpirit, int
     if(parent != nullptr)
     {
         UnionFindNode<K,T>* key_root = parent->FindRoot(totalSpirit,pre_gamesPlayed);
+        permutation_t test1 = permutation_t::neutral();
         totalSpirit = totalSpirit * linkSpirit;
+
         pre_gamesPlayed -= link_gamesPlayed;
         pre_gamesPlayed += gamesPlayed_whenBought;
         parent = key_root;
@@ -151,7 +168,6 @@ void UnionFindNode<K,T>::FindSpiritLinks(permutation_t &totalSpirit)
     int gamesPlayed = 0;
     this->FindRoot(sumSpirit,gamesPlayed);
     totalSpirit = totalSpirit * sumSpirit;
-    return;
 }
 
 template<class K,class T>
@@ -171,12 +187,11 @@ void UnionFindNode<K,T>::Unite(UnionFindNode<K,T>* x) {
     int gamesPlayed = 0;
     UnionFindNode<K,T>* x_Root = x->FindRoot(totalSpirit,gamesPlayed);
     UnionFindNode<K,T>* y_Root = this->FindRoot(totalSpirit,gamesPlayed);
-    if(x_Root = y_Root)
+    if(x_Root == y_Root)
         return;
     x_Root->whenJoined = y_Root->size + 1;
     y_Root->size += x_Root->size;
     x_Root->parent = y_Root;
-    return;
 }
 
 
