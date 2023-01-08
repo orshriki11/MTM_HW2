@@ -17,3 +17,7 @@ Also here are some link summarys from some tests:
 https://pastebin.com/tzWiFv1r
 
 https://pastebin.com/PEJk5BkC
+
+Hopefully i'll fix those issues before you wake up! :D
+
+Oh, And good morning ig.
