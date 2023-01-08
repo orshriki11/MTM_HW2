@@ -858,7 +858,7 @@ AVLTreeResult AVLTree<K, T>::get_ith_ranked_element(int rank, T *data) {
             r = r + Node<K, T>::get_subtree_size(current->left_son) + 1;
         } else if (rank < r) {
             current = current->left_son;
-            r = Node<K, T>::get_subtree_size(current->left_son) + 1;
+            r = r - 1 - Node<K, T>::get_subtree_size(current->right_son);
         }
     }
     *data = current->data;
