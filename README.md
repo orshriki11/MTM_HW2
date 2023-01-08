@@ -7,9 +7,9 @@ The code passed the basic tests but is having problem with the advanced and diff
 
 The main issues are:
 - The way playersHash.insert in addplayer is inserting a new node (from copy construct) into the hash,
-causing it to have link issues with the original uptree.
+causing it to have link issues with the original UpTree.
 
-- where UFNode.Find is called it can mistakengly be called on a NULL node, because of the same issue that the nodes are inserted
+- Where UFNode.Find is called it can mistakengly be called on a NULL team/node, because of the same issue that the nodes are inserted
 into the hash unlinked to their original tree.
 
 Also here are some link summarys from some tests:
