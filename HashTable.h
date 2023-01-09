@@ -86,12 +86,14 @@ bool HashTable<T>::isPrime(int n) {
 template<class T>
 int HashTable<T>::nextPrime(int n) {
     while (!isPrime(++n)) {
+
     }
     return n;
 }
 
 template<class T>
 int HashTable<T>::prevPrime(int n) {
+
     while (!isPrime(--n)) {
     }
     return n;
@@ -178,6 +180,7 @@ void HashTable<T>::growSize() {
     int new_size = (size + 1) * 2 - 1;
 //    new_size = nextPrime(new_size);
 
+
     int *doubled_keys_array = allocateAndCopy(new_size, size, keys_array);
     T *doubled_data_array = allocateAndCopy(new_size, size, data_array);
     CellStatus *doubled_cell_status_array = allocateAndCopy(new_size, size, cell_status_array);
@@ -241,6 +244,7 @@ void HashTable<T>::shrinkSize() {
     //new hash table
     int new_size = (size + 1) / 2 - 1;
 //    new_size = prevPrime(new_size);
+
     if (new_size < INITIAL_ARRAY_SIZE) {
         new_size = INITIAL_ARRAY_SIZE;
     }
