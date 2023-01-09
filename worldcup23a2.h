@@ -35,7 +35,7 @@ public:
 	
 	world_cup_t();
 
-    ~world_cup_t() = default;
+    ~world_cup_t();
 
     world_cup_t(const world_cup_t&) = default;
 

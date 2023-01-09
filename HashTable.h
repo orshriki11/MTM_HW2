@@ -71,6 +71,10 @@ public:
     };
 
     void print();
+
+    void deletePtrElements();
+
+    void copyPtrElements();
 };
 
 template<class T>
@@ -350,5 +354,18 @@ void HashTable<T>::print() {
     std::cout << "}" << std::endl;
 }
 
+template<class T>
+void HashTable<T>::deletePtrElements() {
+    for (int i = 0; i < size; i++) {
+        if (cell_status_array[i] == OCCUPIED) {
+            delete data_array[i];
+        }
+    }
+}
+
+template<class T>
+void HashTable<T>::copyPtrElements() {
+
+}
 
 #endif //WET2MIVNE_HASHTABLE_H
