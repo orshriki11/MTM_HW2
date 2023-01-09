@@ -304,6 +304,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     else
     {
         team1->UF_Team->Unite(team2->UF_Team);
+        team1->UF_Team = team1->UF_Team->FindRootOnly();
     }
 
 
