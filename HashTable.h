@@ -44,6 +44,12 @@ private:
 
     explicit HashTable(int size);
 
+    bool isPrime(int n);
+
+    int nextPrime(int p);
+
+    int prevPrime(int p);
+
 public:
     HashTable();
 
@@ -57,7 +63,7 @@ public:
 
     void remove(int key);
 
-    T* search(int key);
+    T *search(int key);
 
     int getNumElements();
 
@@ -66,6 +72,30 @@ public:
 
     void print();
 };
+
+template<class T>
+bool HashTable<T>::isPrime(int n) {
+    for (int i = 2; i < sqrt(n); i++) {
+        if (n % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template<class T>
+int HashTable<T>::nextPrime(int n) {
+    while(!isPrime(++n)){
+    }
+    return n;
+}
+
+template<class T>
+int HashTable<T>::prevPrime(int n) {
+    while(!isPrime(--n)){
+    }
+    return n;
+}
 
 template<class T>
 HashTable<T>::HashTable(int size) : size(size), count_occupied(0), count_dirty(0) {
@@ -145,6 +175,7 @@ int HashTable<T>::iterativeHash(int key, int iter_num) {
 template<class T>
 void HashTable<T>::growSize() {
     int new_size = (size + 1) * 2 - 1;
+    new_size = nextPrime(new_size);
 
     int *doubled_keys_array = allocateAndCopy(new_size, size, keys_array);
     T *doubled_data_array = allocateAndCopy(new_size, size, data_array);
@@ -208,6 +239,7 @@ template<class T>
 void HashTable<T>::shrinkSize() {
     //new hash table
     int new_size = (size + 1) / 2 - 1;
+    new_size = prevPrime(new_size);
     if (new_size < INITIAL_ARRAY_SIZE) {
         new_size = INITIAL_ARRAY_SIZE;
     }
@@ -250,7 +282,13 @@ void HashTable<T>::remove(int key) {
 }
 
 template<class T>
-T* HashTable<T>::search(int key) {
+T *HashTable<T>::search(int key) {
+    bool found = false;
+    for (int i = 0; i < size; i++) {
+        if (key == keys_array[i]) {
+            found = true;
+        }
+    }
     int key_index = findKeyIndex(key);
     if (key_index == -1) {
         return nullptr;

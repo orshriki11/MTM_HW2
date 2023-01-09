@@ -73,20 +73,18 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 
     std::shared_ptr<Team> team_of_Player;
     teamsTreeById.find(teamId, &team_of_Player);
-
     try {
         std::shared_ptr<Player> new_player = std::make_shared<Player>(playerId, teamId, spirit, gamesPlayed, ability, cards, goalKeeper);
         auto* player_node = new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>(new_player);
-        if(playerId == 68208)
-            bool thatP = true;
         if(team_of_Player->isNew)
         {
             player_node->master = team_of_Player;
             player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
-            player_node->linkSpirit = team_of_Player->teamSpirit;
+            //player_node->linkSpirit = team_of_Player->teamSpirit;
             player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
 
             team_of_Player->UF_Team = player_node;
+            team_of_Player->UF_Team->initNode = false;
             //TODO make sure this works fine and doesnt lead to mem leaks
             playersHash.insert(playerId,team_of_Player->UF_Team);
             //auto wow = playersHash.search(playerId);
@@ -118,8 +116,6 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     team_of_Player->teamSpirit = team_of_Player->teamSpirit * spirit;
     teamsTreeByAbility.insert(*team_of_Player, team_of_Player);
 
-    if(playerId == 68208)
-        auto wow = playersHash.search(playerId);
     return StatusType::SUCCESS;
 }
 
@@ -179,9 +175,7 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
     {
         return StatusType::FAILURE;
     }
-    //auto player_node = *player_node_ptr;
     int gamesFromUF = (*player_node_ptr)->FindGamesPlayed();
-    //int gamesTotalPlayed = player_node->Find()->gamesPlayed;
 
     return gamesFromUF + (*player_node_ptr)->data->gamesPlayed;
 }
@@ -205,11 +199,6 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards) {
     team->totalCards += cards;
     (*player_node_ptr)->data->cards += cards;
 
-    if(playerId == 68208)
-    {
-        auto player_node_ptr_test = playersHash.search(playerId);
-        int wow = 0;
-    }
     return StatusType::SUCCESS;
 }
 
@@ -258,12 +247,7 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     if (playerId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    //FIXME Used For debug
-    if(playerId == 68208)
-        bool wowww = true;
-    //FIXME Used For debug
 
-    int test = 1;
     auto player_node_ptr = playersHash.search(playerId);
     if(player_node_ptr == nullptr) {
         return StatusType::FAILURE;
@@ -276,10 +260,7 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
 
     permutation_t playerSpirit = (*player_node_ptr)->data->spirit;
 
-    //permutation_t spirit_sum = permutation_t::neutral();
-    //(*player_node_ptr)->FindSpiritLinks(&spirit_sum);
     spirit_sum = spirit_sum * playerSpirit;
-    // TODO: Need to figure out how to accumulate spirit from continuous bought teams.
     return spirit_sum;
 }
 
@@ -300,12 +281,13 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     {
         return StatusType::FAILURE;
     }
+
     //TODO: check logic here. games played, spirit
     team1->points += team2->points;
-    team2->UF_Team->linkSpirit = team1->teamSpirit;
+    permutation_t forLink = team1->teamSpirit;
     team2->UF_Team->link_gamesPlayed = team1->gamesPlayed;
     //Team2->UF_Team->gamesPlayed_whenBought = Team2->gamesPlayed;
-    team1->teamSpirit = team2->teamSpirit * team1->teamSpirit;
+    team1->teamSpirit = team1->teamSpirit * team2->teamSpirit;
     team1->totalAbility += team2->totalAbility;
     team1->gksCount += team2->gksCount;
     team1->totalCards += team2->totalCards;
@@ -313,11 +295,14 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     if(team1->isNew)
     {
         team1->UF_Team = team2->UF_Team;
+        team1->isNew = false;
         team2->UF_Team->master = team1;
+        team2->UF_Team->initNode = false;
     }
     else
     {
         team1->UF_Team->Unite(team2->UF_Team);
+        team2->UF_Team->linkSpirit = forLink;
     }
 
 
