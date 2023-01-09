@@ -252,15 +252,15 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     if(player_node_ptr == nullptr) {
         return StatusType::FAILURE;
     }
-    permutation_t spirit_sum = permutation_t::neutral();
-    std::shared_ptr<Team> team = (*player_node_ptr)->FindWithSpirit(&spirit_sum);
+    permutation_t linksSpirit = permutation_t::neutral();
+    permutation_t rootSpirit = permutation_t::neutral();
+    std::shared_ptr<Team> team = (*player_node_ptr)->FindWithSpirit(&linksSpirit,&rootSpirit);
     if(team->isRemoved) {
         return StatusType::FAILURE;
     }
 
     permutation_t playerSpirit = (*player_node_ptr)->data->spirit;
-
-    spirit_sum = spirit_sum * playerSpirit;
+    permutation_t spirit_sum = linksSpirit * playerSpirit;
     return spirit_sum;
 }
 
@@ -301,7 +301,18 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     }
     else
     {
-        team1->UF_Team->Unite(team2->UF_Team);
+        if(team2->UF_Team->size > team1->UF_Team->size)
+        {
+            team1->UF_Team->Unite(team2->UF_Team);
+            team2->UF_Team->spirit_whenBought = forLink;
+            team1->UF_Team->linkSpirit = forLink.inv();
+        }
+
+        else
+        {
+            team1->UF_Team->Unite(team2->UF_Team);
+            team2->UF_Team->linkSpirit = forLink;
+        }
         team1->UF_Team = team1->UF_Team->FindRootOnly();
 
     }
