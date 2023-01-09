@@ -43,13 +43,30 @@ struct Team {
                        totalAbility(0),
                        isRemoved(false),
                        isNew(true),
-
-                       UF_Team(new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>)
+                      UF_Team(new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>)
                        {
         teamSpirit = permutation_t::neutral();
+
     }
 
-    Team() = default;
+    Team() : teamId(-1),
+                       points(0),
+                       totalCards(0),
+                       gamesPlayed(0),
+                       gksCount(0),
+                       playersCount(0),
+                       totalAbility(0),
+                       isRemoved(false),
+                       isNew(true),
+             UF_Team(new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>)
+    {
+        teamSpirit = permutation_t::neutral();
+        //UF_Team = new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>;
+    }
+
+
+
+    //Team() = default;
 
     ~Team() {
     };
