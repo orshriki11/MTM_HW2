@@ -106,6 +106,7 @@ HashTable<T>::HashTable(int size) : size(size), count_occupied(0), count_dirty(0
     cell_status_array = new CellStatus[size];
     for (int i = 0; i < size; i++) {
         cell_status_array[i] = EMPTY;
+        keys_array[i] = -1;
     }
 }
 
@@ -125,6 +126,7 @@ HashTable<T>::HashTable() : size(INITIAL_ARRAY_SIZE), count_occupied(0), count_d
     data_array = new T[size];
     cell_status_array = new CellStatus[size];
     for (int i = 0; i < size; i++) {
+        keys_array[i] = -1;
         cell_status_array[i] = EMPTY;
     }
 }
@@ -187,6 +189,7 @@ void HashTable<T>::growSize() {
 
     for (int i = size; i < new_size; i++) {
         doubled_cell_status_array[i] = EMPTY;
+        doubled_keys_array[i] = -1;
     }
 
     delete[] keys_array;
