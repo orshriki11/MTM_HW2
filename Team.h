@@ -44,7 +44,7 @@ struct Team {
                        isRemoved(false),
                        isNew(true),
 
-                       UF_Team(new UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>>)
+                       UF_Team(nullptr)
                        {
         teamSpirit = permutation_t::neutral();
     }
