@@ -19,16 +19,17 @@ public:
     permutation_t spirit_whenBought;
     int link_gamesPlayed;
     int whenJoined;
-
     int gamesPlayed_whenBought;
-    //bool isRoot;
+
     UnionFindNode<K,T>* parent;  // parent in the up tree
 
     explicit UnionFindNode(T Data);
 
     UnionFindNode();
 
-    UnionFindNode<K,T> &operator=(const UnionFindNode<K,T> &node) = default;
+    UnionFindNode(const UnionFindNode<K,T> &node);
+
+    UnionFindNode<K,T> &operator=(const UnionFindNode<K,T> &node);
 
     ~UnionFindNode() = default;
 
@@ -91,10 +92,42 @@ UnionFindNode<K,T>::UnionFindNode() : size(1),
                                     link_gamesPlayed(0),
                                     whenJoined(0),
                                     gamesPlayed_whenBought(0),
-                                    parent(nullptr) {
+                                    parent(nullptr)
+{
     linkSpirit = permutation_t::neutral();
     spirit_whenBought = permutation_t::neutral();
-                                    }
+}
+
+
+
+template<class K,class T>
+UnionFindNode<K,T>::UnionFindNode(const UnionFindNode<K,T> &node)
+{
+    this->size = node.size;
+    this->parent = node.parent;
+    this->master = node.master;
+    this->whenJoined = node.whenJoined;
+    this->gamesPlayed_whenBought = node.gamesPlayed_whenBought;
+    this->spirit_whenBought = node.spirit_whenBought;
+    this->link_gamesPlayed = node.link_gamesPlayed;
+    this->linkSpirit = node.linkSpirit;
+    this->data = node.data;
+}
+
+template<class K,class T>
+UnionFindNode<K,T> &UnionFindNode<K,T>::operator=(const UnionFindNode<K,T> &node)
+{
+    this->size = node.size;
+    this->parent = node.parent;
+    this->master = node.master;
+    this->whenJoined = node.whenJoined;
+    this->gamesPlayed_whenBought = node.gamesPlayed_whenBought;
+    this->spirit_whenBought = node.spirit_whenBought;
+    this->link_gamesPlayed = node.link_gamesPlayed;
+    this->linkSpirit = node.linkSpirit;
+    this->data = node.data;
+    return *this;
+}
 
 
 template<class K,class T>

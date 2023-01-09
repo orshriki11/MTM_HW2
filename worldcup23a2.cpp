@@ -219,11 +219,11 @@ output_t<int> world_cup_t::get_player_cards(int playerId) {
     if (playerId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *playersHash.search(playerId);
-    if (player_node == nullptr) {
+    auto player_node_ptr = playersHash.search(playerId);
+    if (player_node_ptr == nullptr) {
         return StatusType::FAILURE;
     }
-    int cards = player_node->data->cards;
+    int cards = (*player_node_ptr)->data->cards;
     return cards;
 }
 
