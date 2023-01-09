@@ -47,7 +47,7 @@ StatusType world_cup_t::remove_team(int teamId) {
     //assert(res_by_id == AVL_TREE_SUCCESS);
     AVLTreeResult res_by_ability = teamsTreeByAbility.remove(*found_team);
     AVLTreeResult removed_by_id = teamsTreeById.remove(teamId);
-    assert(res_by_ability == AVL_TREE_SUCCESS && removed_by_id == AVL_TREE_SUCCESS);
+    //assert(res_by_ability == AVL_TREE_SUCCESS && removed_by_id == AVL_TREE_SUCCESS);
 
     if(res_by_ability != AVL_TREE_SUCCESS || removed_by_id != AVL_TREE_SUCCESS)
         return StatusType::ALLOCATION_ERROR;
@@ -65,9 +65,6 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     if (playerId <= 0 || teamId <= 0 || !spirit.isvalid() || gamesPlayed < 0 || cards < 0) {
         return StatusType::INVALID_INPUT;
     }
-//    if (gamesPlayed == 0 && (cards > 0)) {
-//        return StatusType::INVALID_INPUT;
-//    }
     if(!teamsTreeById.contains(teamId)){
         return StatusType::FAILURE;
     }
@@ -84,19 +81,14 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
         {
             player_node->master = team_of_Player;
             player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
-            //player_node->linkSpirit = team_of_Player->teamSpirit;
-            //player_node->link_gamesPlayed = team_of_Player->UF_Team->gamesPlayed_whenBought;
 
             team_of_Player->UF_Team = player_node;
-            //team_of_Player->UF_Team->initNode = false;
 
             playersHash.insert(playerId,team_of_Player->UF_Team);
-            //auto wow = playersHash.search(playerId);
             team_of_Player->isNew = false;
         }
         else
         {
-            assert(team_of_Player->UF_Team != nullptr);
             team_of_Player->UF_Team->insert(player_node);
             player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
             player_node->linkSpirit = (player_node->parent->spirit_whenBought).inv() * team_of_Player->teamSpirit;
@@ -192,7 +184,7 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards) {
     if (player_node_ptr == nullptr) {
         return StatusType::FAILURE;
     }
-    //UnionFindNode<std::shared_ptr<Team>, std::shared_ptr<Player>> *player_node = *player_node_ptr;
+
 
     std::shared_ptr<Team> team = (*player_node_ptr)->Find();
     if(team->isRemoved) {
@@ -284,7 +276,6 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     {
         return StatusType::FAILURE;
     }
-
     team1->points += team2->points;
     permutation_t forLink = team1->teamSpirit;
     //Team2->UF_Team->gamesPlayed_whenBought = Team2->gamesPlayed;
@@ -316,17 +307,22 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
         {
             team1->UF_Team->Unite(team2->UF_Team);
             team2->UF_Team->link_gamesPlayed = team1->UF_Team->gamesPlayed_whenBought;
-            team2->UF_Team->linkSpirit = forLink;
+            team2->UF_Team->linkSpirit = (team1->UF_Team->spirit_whenBought).inv() * forLink;
         }
         team1->UF_Team = team1->UF_Team->FindRootOnly();
+
 
     }
 
 
-    assert(remove_team(teamId2) == StatusType::SUCCESS);
-    //team2->teamId = -1;
+    if(remove_team(teamId2) != StatusType::SUCCESS)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+
     if(teamsTreeByAbility.insert(*team1,team1) != AVLTreeResult::AVL_TREE_SUCCESS)
         return StatusType::ALLOCATION_ERROR;
+
 
     return StatusType::SUCCESS;
 }
