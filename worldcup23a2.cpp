@@ -291,14 +291,15 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     team1->gksCount += team2->gksCount;
     team1->totalCards += team2->totalCards;
     team1->playersCount += team2->playersCount;
-    if(team1->isNew)
+
+    if(team1->isNew && !team2->isNew)
     {
         team1->UF_Team = team2->UF_Team;
         team1->isNew = false;
         team2->UF_Team->master = team1;
         //team2->UF_Team->initNode = false;
     }
-    else
+    else if(!team1->isNew && !team2->isNew)
     {
         if(team2->UF_Team->size > team1->UF_Team->size)
         {
