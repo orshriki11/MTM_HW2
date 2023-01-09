@@ -3,6 +3,19 @@
 world_cup_t::world_cup_t() : numberOfActiveTeams(0), numberOfAllTeams(0) {
 }
 
+world_cup_t::~world_cup_t() {
+    playersHash.deletePtrElements();
+}
+//TODO
+//
+//world_cup_t::world_cup_t(const world_cup_t&) {
+//
+//}
+//
+//world_cup_t& world_cup_t::operator=(const world_cup_t&) {
+//
+//}
+
 StatusType world_cup_t::add_team(int teamId) {
     //TODO: Add team to HashTable and link it with it's UF.
     if (teamId <= 0) {
