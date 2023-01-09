@@ -100,13 +100,13 @@ void UnionFindNode<K,T>::insert(UnionFindNode<K,T>* node) {
         node->parent = this;
         this->size++;
         node->whenJoined = size;
-        initNode = false;
+        //initNode = false;
     }
     else
     {
         node->parent = nullptr;
         node->master = master;
-        initNode = false;
+        //initNode = false;
 
     }
 

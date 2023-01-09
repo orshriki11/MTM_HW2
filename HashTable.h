@@ -288,10 +288,8 @@ void HashTable<T>::remove(int key) {
 
 template<class T>
 T *HashTable<T>::search(int key) {
-    bool found = false;
     for (int i = 0; i < size; i++) {
         if (key == keys_array[i]) {
-            found = true;
         }
     }
     int key_index = findKeyIndex(key);

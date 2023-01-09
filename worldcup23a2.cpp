@@ -84,7 +84,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
             player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
 
             team_of_Player->UF_Team = player_node;
-            team_of_Player->UF_Team->initNode = false;
+            //team_of_Player->UF_Team->initNode = false;
             //TODO make sure this works fine and doesnt lead to mem leaks
             playersHash.insert(playerId,team_of_Player->UF_Team);
             //auto wow = playersHash.search(playerId);
@@ -297,7 +297,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
         team1->UF_Team = team2->UF_Team;
         team1->isNew = false;
         team2->UF_Team->master = team1;
-        team2->UF_Team->initNode = false;
+        //team2->UF_Team->initNode = false;
     }
     else
     {
