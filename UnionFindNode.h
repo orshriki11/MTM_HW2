@@ -22,7 +22,6 @@ public:
     int gamesPlayed_whenBought;
     //bool isRoot;
     UnionFindNode<K,T>* parent;  // parent in the up tree
-    bool initNode;
 
     explicit UnionFindNode(T Data);
 
@@ -42,6 +41,8 @@ public:
 
     K Find();
 
+    UnionFindNode<K,T>* FindRootOnly();
+
     //K Find(UnionFindNode<K,T>* key);
 
     void Unite(UnionFindNode<K,T>* x);
@@ -59,6 +60,15 @@ public:
 };
 
 template<class K,class T>
+UnionFindNode<K,T>* UnionFindNode<K,T>::FindRootOnly() {
+    auto node = this;
+    while (node->parent != nullptr) {
+        node = node->parent;
+    }
+    return node;
+}
+
+template<class K,class T>
 UnionFindNode<K,T>::UnionFindNode(T Data) :
         size(1),
         data(Data),
@@ -66,8 +76,7 @@ UnionFindNode<K,T>::UnionFindNode(T Data) :
         link_gamesPlayed(0),
         whenJoined(0),
         gamesPlayed_whenBought(0),
-        parent(nullptr),
-        initNode(true)
+        parent(nullptr)
           {
               linkSpirit = permutation_t::neutral();
           }
@@ -79,8 +88,7 @@ UnionFindNode<K,T>::UnionFindNode() : size(1),
                                     link_gamesPlayed(0),
                                     whenJoined(0),
                                     gamesPlayed_whenBought(0),
-                                    parent(nullptr),
-                                      initNode(true){
+                                    parent(nullptr) {
     linkSpirit = permutation_t::neutral();
                                     }
 
@@ -205,12 +213,19 @@ void UnionFindNode<K,T>::Unite(UnionFindNode<K,T>* x) {
     UnionFindNode<K,T>* y_Root = this->FindRoot(&totalSpirit2,&gamesPlayed2);
     if(x_Root == y_Root)
         return;
-    if(y_Root->initNode)
-    {
-        x_Root->parent = nullptr;
+//    if(y_Root->initNode)
+//    {
+//        x_Root->parent = nullptr;
+//        x_Root->master = y_Root->master;
+//        y_Root = x_Root;
+//    }
+    // FIXME: this lacks the needed logic for correct spirit/num_games calculations
+    if (y_Root->size < x_Root->size) {
+        y_Root->whenJoined = x_Root->size + 1;
+        x_Root->size += y_Root->size;
+        y_Root->parent = x_Root;
+
         x_Root->master = y_Root->master;
-        y_Root = x_Root;
-        initNode = false;
     }
     else
     {
