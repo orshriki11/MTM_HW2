@@ -81,7 +81,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
             player_node->master = team_of_Player;
             player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
             //player_node->linkSpirit = team_of_Player->teamSpirit;
-            player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
+            //player_node->link_gamesPlayed = team_of_Player->UF_Team->gamesPlayed_whenBought;
 
             team_of_Player->UF_Team = player_node;
             //team_of_Player->UF_Team->initNode = false;
@@ -95,8 +95,8 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
             assert(team_of_Player->UF_Team != nullptr);
             team_of_Player->UF_Team->insert(player_node);
             player_node->data->partialSpirit = team_of_Player->teamSpirit * spirit;
-            player_node->linkSpirit = team_of_Player->teamSpirit;
-            player_node->link_gamesPlayed = team_of_Player->gamesPlayed;
+            player_node->linkSpirit = (player_node->parent->spirit_whenBought).inv() * team_of_Player->teamSpirit;
+            player_node->link_gamesPlayed = team_of_Player->UF_Team->gamesPlayed_whenBought;
 
             //TODO make sure this works fine and doesnt lead to mem leaks
             playersHash.insert(playerId,player_node);
@@ -260,7 +260,7 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     }
 
     permutation_t playerSpirit = (*player_node_ptr)->data->spirit;
-    permutation_t spirit_sum = linksSpirit * playerSpirit;
+    permutation_t spirit_sum = rootSpirit * (linksSpirit * playerSpirit);
     return spirit_sum;
 }
 
@@ -285,7 +285,6 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     //TODO: check logic here. games played, spirit
     team1->points += team2->points;
     permutation_t forLink = team1->teamSpirit;
-    team2->UF_Team->link_gamesPlayed = team1->gamesPlayed;
     //Team2->UF_Team->gamesPlayed_whenBought = Team2->gamesPlayed;
     team1->teamSpirit = team1->teamSpirit * team2->teamSpirit;
     team1->totalAbility += team2->totalAbility;
@@ -303,14 +302,17 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     {
         if(team2->UF_Team->size > team1->UF_Team->size)
         {
+            int gamesTeam2 = team2->UF_Team->gamesPlayed_whenBought;
             team1->UF_Team->Unite(team2->UF_Team);
-            team2->UF_Team->spirit_whenBought = forLink;
-            team1->UF_Team->linkSpirit = forLink.inv();
+            team2->UF_Team->spirit_whenBought = forLink * team2->UF_Team->spirit_whenBought;
+            team1->UF_Team->linkSpirit = team2->UF_Team->spirit_whenBought.inv();
+            team1->UF_Team->link_gamesPlayed = gamesTeam2;
         }
 
         else
         {
             team1->UF_Team->Unite(team2->UF_Team);
+            team2->UF_Team->link_gamesPlayed = team1->UF_Team->gamesPlayed_whenBought;
             team2->UF_Team->linkSpirit = forLink;
         }
         team1->UF_Team = team1->UF_Team->FindRootOnly();
