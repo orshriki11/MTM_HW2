@@ -73,8 +73,6 @@ public:
     void print();
 
     void deletePtrElements();
-
-    void copyPtrElements();
 };
 
 template<class T>
@@ -361,11 +359,6 @@ void HashTable<T>::deletePtrElements() {
             delete data_array[i];
         }
     }
-}
-
-template<class T>
-void HashTable<T>::copyPtrElements() {
-
 }
 
 #endif //WET2MIVNE_HASHTABLE_H

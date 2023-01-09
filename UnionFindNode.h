@@ -272,7 +272,7 @@ void UnionFindNode<K,T>::Unite(UnionFindNode<K,T>* x) {
 //        x_Root->master = y_Root->master;
 //        y_Root = x_Root;
 //    }
-    // FIXME: this lacks the needed logic for correct spirit/num_games calculations
+
     if (y_Root->size < x_Root->size) {
         y_Root->whenJoined = x_Root->size + 1;
         x_Root->size += y_Root->size;
